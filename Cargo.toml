@@ -1,0 +1,25 @@
+[package]
+name = "cargo-count"
+version = "0.1.0"
+authors = ["Kevin K <kbknapp@gmail.com>"]
+
+[dependencies]
+clap = "~1.2.1"
+glob = "~0.2.10"
+tabwriter = "~0.1.23"
+regex = "~0.1.41"
+
+[dependencies.ansi_term]
+version = "~0.6.3"
+optional = true
+
+[dependencies.regex_macros]
+version = "*"
+optional = true
+
+[features]
+default = ["color"]
+color = ["ansi_term"]
+debug = []
+# unstable = ["regex_macros"]
+unstable = []
