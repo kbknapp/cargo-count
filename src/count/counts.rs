@@ -151,10 +151,9 @@ impl<'c> Counts<'c> {
                             continue;
                         } else if line.contains(ms) {
                             debugln!("line contains a multi start");
-                            count.code += 1;
                             is_in_comments = !line.contains(count.multi_end().unwrap());
                             debugln!("line also contained a multi end: {:?}", is_in_comments);
-                            continue;
+                            if is_in_comments { continue; }
                         }
                     } else {
                         debugln!("No multi line comments for this type");
