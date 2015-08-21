@@ -146,13 +146,13 @@ impl<'c> Counts<'c> {
                         if line.starts_with(ms) {
                             debugln!("line starts with multi comment");
                             count.comments += 1;
-                            is_in_comments = line.contains(count.multi_end().unwrap());
+                            is_in_comments = !line.contains(count.multi_end().unwrap());
                             debugln!("line also contained a multi end: {:?}", is_in_comments);
                             continue;
                         } else if line.contains(ms) {
                             debugln!("line contains a multi start");
                             count.code += 1;
-                            is_in_comments = line.contains(count.multi_end().unwrap());
+                            is_in_comments = !line.contains(count.multi_end().unwrap());
                             debugln!("line also contained a multi end: {:?}", is_in_comments);
                             continue;
                         }
