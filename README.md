@@ -6,9 +6,14 @@ A cargo subcommand for displaying line counts of source code in projects, includ
 
 ## Demo
 
-Running `cargo count --separator , --unsafe-statistics` in the [Rust](https://github.com/rust-lang/rust) repo yields these results:
+To count the source code in the [Rust](https://github.com/rust-lang/rust) repository, and print some naive statistics on how much "unsafe" code exists.
+
+**NOTE:** The Rust repository is quite large, if you're on a slow internet connect consider using a smaller repository, such as the `cargo-count` repo.
 
 ```
+$ git clone https://github.com/rust-lang/rust
+$ cd rust
+$ cargo count --separator , --unsafe-statistics
 Gathering information...
          Language    Files  Lines    Blanks  Comments  Code     Unsafe (%)
          --------    -----  -----    ------  --------  ----     ----------
@@ -23,7 +28,7 @@ Gathering information...
 Totals:              6,125  547,813  65,934  166,777   315,102  9,280 (2.95%)
 ```
 
-The `-s ,` sets a `,` character as the thousands separator, and `--unsafe-statistics` looks for, and counts `unsafe` blocks.
+The `--separator ,` sets a `,` character as the thousands separator, and `--unsafe-statistics` looks for, and counts lines of `unsafe`.
 
 ## Compiling
 
