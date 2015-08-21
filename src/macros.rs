@@ -22,7 +22,7 @@ macro_rules! werr(
 );
 
 macro_rules! verbose(
-    ($cfg:ident, $($arg:tt)*) => ({
+    ($cfg:expr, $($arg:tt)*) => ({
         if $cfg.verbose {
             use std::io::{Write, stdout};
             write!(&mut stdout(), $($arg)*).ok();
@@ -31,7 +31,7 @@ macro_rules! verbose(
 );
 
 macro_rules! verboseln(
-    ($cfg:ident, $($arg:tt)*) => ({
+    ($cfg:expr, $($arg:tt)*) => ({
         if $cfg.verbose {
             use std::io::{Write, stdout};
             writeln!(&mut stdout(), $($arg)*).ok();
@@ -39,7 +39,6 @@ macro_rules! verboseln(
     })
 );
 
-// #[cfg(not(unstable))]
 macro_rules! regex(
     ($s:expr) => ({::regex::Regex::new($s).unwrap()})
 );

@@ -4,6 +4,8 @@ use std::fmt::Result as FmtResult;
 
 use fmt::Format;
 
+pub type CliResult<T> = Result<T, CliError>;
+
 #[derive(Debug)]
 #[allow(dead_code)]
 pub enum CliError {
