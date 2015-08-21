@@ -17,15 +17,15 @@ $ cargo count --separator , --unsafe-statistics
 Gathering information...
          Language    Files  Lines    Blanks  Comments  Code     Unsafe (%)
          --------    -----  -----    ------  --------  ----     ----------
-         Rust        6,015  527,198  63,300  161,789   302,109  1,162 (0.38%)
-         CSS         4      1,262    99      490       673
-         Python      31     4,797    822     680       3,295
-         C           54     9,962    1,154   2,945     5,863    5,836 (99.54%)
-         C Header    13     1,865    243     650       972      937 (96.40%)
-         JavaScript  4      1,118    131     142       845
+         Rust        6,015  527,198  66,798  133,386   327,014  1,199 (0.37%)
+         C           54     9,962    1,445   1,492     7,025    6,968 (99.19%)
+         CSS         4      1,262    148     52        1,062    
+         JavaScript  4      1,118    131     166       821      
+         Python      31     4,797    843     585       3,369    
+         C Header    13     1,865    284     585       996      939 (94.28%)
          C++         4      1,611    185     81        1,345    1,345 (100.00%)
          --------    -----  -----    ------  --------  ----     ----------
-Totals:              6,125  547,813  65,934  166,777   315,102  9,280 (2.95%)
+Totals:              6,125  547,813  69,834  136,347   341,632  10,451 (3.06%)
 ```
 
 The `--separator ,` sets a `,` character as the thousands separator, and `--unsafe-statistics` looks for, and counts lines of `unsafe`.
