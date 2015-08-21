@@ -1,11 +1,12 @@
 # cargo-count
+
 Linux: [![Build Status](https://travis-ci.org/kbknapp/cargo-count.svg?branch=master)](https://travis-ci.org/kbknapp/cargo-count)
 
-A cargo subcommand for displaying line counts of source code in projects
+A cargo subcommand for displaying line counts of source code in projects, including a niave `unsafe` counter for Rust source files. This subcommand was originally based off and inspired by the project [rusty-cloc](https://github.com/aaronepower/rusty-cloc) by [Aaronepower](https://github.com/aaronepower)
 
 ## Demo
 
-Running `cargo count -s , --unsafe-statistics` in the [Rust](https://github.com/rust-lang/rust) repo yields these results:
+Running `cargo count --separator , --unsafe-statistics` in the [Rust](https://github.com/rust-lang/rust) repo yields these results:
 
 ```
 Gathering information...
@@ -30,7 +31,7 @@ Follow these instructions to compile `cargo-count`, then skip down to Installati
 
  1. Ensure you have current version of `cargo` and [Rust](https://www.rust-lang.org) installed
  2. Clone the project `$ git clone https://github.com/kbknapp/cargo-count && cd cargo-count`
- 3. Build the project `$ cargo build --release`
+ 3. Build the project `$ cargo build --release` (**NOTE:** There is a large performance differnce when compiling without optimizations, so I recommend alwasy using `--release` to enable to them)
  4. Once complete, the binary will be located at `target/release/cargo-count`
 
 ## Installation and Usage
@@ -77,21 +78,23 @@ USAGE:
 
 FLAGS:
     -h, --help                 Prints help information
-        --ignore               Ignore files and streams with invalid UTF-8
-        --unsafe-statistics    Displays percentages of "unsafe" code
+        --unsafe-statistics    Displays lines and percentages of "unsafe" code
     -V, --version              Prints version information
     -v, --verbose              Print verbose output
 
 OPTIONS:
-    -l, --language <exts>...    The languages to count by file extension (i.e. '-l js py cpp')
-    -e, --exclude <paths>...    Files or directories to exclude
+    -l, --language <exts>...    Only count these languges (by source code extension)
+                                (i.e. '-l js py cpp')
+    -e, --exclude <paths>...    Files or directories to exclude (automatically includes '.git')
+        --utf8-rule <rule>      Sets the UTF-8 parsing rule (Defaults to 'strict')
+                                 [values: ignore lossy strict]
     -s, --separator <sep>       Set the thousands separator for pretty printing
 
 ARGS:
-    to_count...    The file or directory to count
+    to_count...    The files or directories (including children) to count
                    (defaults to current working directory when omitted)
 ```
 
 ## License
 
-`cargo-count` is released under the terms of either the MIT or Apache 2.0 license. See the LICENSE-MIT or LICENSE-APACHE file for the details.
+`cargo-count` is released under the terms of the MIT. See the LICENSE-MIT file for the details.
