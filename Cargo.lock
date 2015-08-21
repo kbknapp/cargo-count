@@ -6,7 +6,6 @@ dependencies = [
  "clap 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex_macros 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "tabwriter 0.1.23 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -64,14 +63,6 @@ dependencies = [
 name = "regex-syntax"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "regex_macros"
-version = "0.1.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "regex 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "strsim"

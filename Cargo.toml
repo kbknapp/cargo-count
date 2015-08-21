@@ -13,13 +13,8 @@ regex = "~0.1.41"
 version = "~0.6.3"
 optional = true
 
-[dependencies.regex_macros]
-version = "*"
-optional = true
-
 [features]
 default = ["color"]
 color = ["ansi_term"]
 debug = []
-# unstable = ["regex_macros"]
 unstable = []
