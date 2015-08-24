@@ -89,7 +89,7 @@ impl<'c> Counts<'c> {
         for count in self.counts.iter_mut() {
             debugln!("iter; count={:?};", count);
             let re = if let Some(kw) = count.lang.unsafe_keyword() {
-                regex!(&*format!("[\\[\\] \\{{\\}}]{}[\\[\\] \\{{\\}}\n]", kw))
+                regex!(&*format!("(.*?)([:^word:]{}[:^word:])(.*)", kw))
             } else {
                 regex!("")
             };
@@ -179,21 +179,42 @@ impl<'c> Counts<'c> {
                         debugln!("Calculating --unsafe-statistics");
                         if count.lang.is_unsafe() {
                             debugln!("The language is not safe");
-                            if let Some(kw) = count.lang.unsafe_keyword() {
-                                debugln!("There is a keyword: {}", kw);
+                            if let Some(..) = count.lang.unsafe_keyword() {
+                                debugln!("There is a keyword");
                                 debugln!("line={:?}", line);
-                                if re.is_match(line) {
-                                    debugln!("It contained the keyword; usafe_line={:?}", line);
-                                    count.usafe += 1;
-                                    let after_usafe = line.split(kw).collect::<Vec<_>>()[1];
-                                    debugln!("after_usafe={:?}", after_usafe);
-                                    is_in_unsafe = Counts::in_unsafe(after_usafe, None);
-                                    debugln!("after counting brackets; is_in_unsafe={:?}; bracket_count={:?}", is_in_unsafe, bracket_count);
-                                } else if is_in_unsafe {
+                                if is_in_unsafe {
                                     debugln!("It didn't contain the keyword, but we are still in unsafe");
                                     count.usafe += 1;
-                                    is_in_unsafe = Counts::in_unsafe(line, Some(bracket_count));
+                                    bracket_count = Counts::count_brackets(line, Some(bracket_count));
+                                    is_in_unsafe = bracket_count > 0;
                                     debugln!("after counting brackets; is_in_unsafe={:?}; bracket_count={:?}", is_in_unsafe, bracket_count);
+                                } else if let Some(caps) = re.captures(line) {
+                                    let mut should_count = true;
+                                    if let Some(before) = caps.at(1) {
+                                        if let Some(single_v) = count.lang.single() {
+                                            for s in single_v {
+                                                if before.contains(s) {
+                                                    should_count = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if let Some(multi) = count.lang.multi_start() {
+                                            if before.contains(multi) && !before.contains(count.lang.multi_end().unwrap()) {
+                                                should_count = false;
+                                            }
+                                        }
+                                    }
+                                    if should_count {
+                                        debugln!("It contained the keyword; usafe_line={:?}", line);
+                                        count.usafe += 1;
+                                        if let Some(after) = caps.at(3) {
+                                            debugln!("after_usafe={:?}", after);
+                                            bracket_count = Counts::count_brackets(after, None);
+                                            is_in_unsafe = bracket_count > 0;
+                                            debugln!("after counting brackets; is_in_unsafe={:?}; bracket_count={:?}", is_in_unsafe, bracket_count);
+                                        }
+                                    }
                                 } else {
                                     debugln!("It didn't contain the keyword, and we are not in unsafe");
                                 }
@@ -267,7 +288,7 @@ impl<'c> Counts<'c> {
         Ok(())
     }
 
-    fn in_unsafe(line: &str, count: Option<i64>) -> bool {
+    fn count_brackets(line: &str, count: Option<i64>) -> i64 {
         let mut b: i64 = count.unwrap_or(0);
         for c in line.chars() {
             match c {
@@ -276,6 +297,6 @@ impl<'c> Counts<'c> {
                 _   => (),
             }
         }
-        b > 0
+        b
     }
 }

@@ -7,6 +7,8 @@ extern crate glob;
 extern crate regex;
 
 use std::io::Write;
+#[cfg(feature = "debug")]
+use std::env;
 
 use clap::{App, AppSettings, Arg, SubCommand};
 
