@@ -3,7 +3,7 @@ name = "cargo-count"
 version = "0.1.0"
 dependencies = [
  "ansi_term 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "clap 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clap 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)",
  "tabwriter 0.1.23 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -24,7 +24,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "clap"
-version = "1.2.1"
+version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "ansi_term 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
