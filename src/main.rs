@@ -49,12 +49,20 @@ fn main() {
                               -l, --language [exts]...    'Only count these languges (by source code extension){n}\
                                                            (i.e. \'-l js py cpp\')'
                               -v, --verbose               'Print verbose output'
+                              -S, --follow-symlinks       'Follows symlinks and counts source files it finds{n}(Defaults to false when omitted)'
                               [to_count]...               'The files or directories (including children) to count{n}\
                                                            (defaults to current working directory when omitted)'")
             .arg(Arg::from_usage("-s, --separator [sep]   'Set the thousands separator for pretty printing'")
                 .validator(single_char))
             .arg(Arg::from_usage("--utf8-rule [rule]     'Sets the UTF-8 parsing rule (Defaults to \'strict\'){n}'")
-                .possible_values(&UTF8_RULES)))
+                .possible_values(&UTF8_RULES))
+            .after_help("When using '--exclude <path>' the path given can either be relative to the current \n\
+                         directory, or absolute. When '<path>' is a file, it must be relative to the current \n\
+                         directory or it will not be found. Example, if the current directory has a child \n\
+                         directory named 'target' with a child fild 'test.rs' and you use `--exclude target/test.rs' \n\
+                         \n\
+                         Globs are also supported. For example, to eclude 'test.rs' files from all child directories \n\
+                         of the current directory you could do '--exclude */test.rs'."))
         .get_matches();
 
     if let Some(m) = m.subcommand_matches("count") {
@@ -68,7 +76,7 @@ fn main() {
 
 fn execute(cfg: Config) -> CliResult<()> {
     debugln!("executing; cmd=execute;");
-    verboseln!(cfg, "{}: {}", Format::Warning("Excluding"), cfg.exclude.connect(", "));
+    verboseln!(cfg, "{}: {:?}", Format::Warning("Excluding"), cfg.exclude);
     verbose!(cfg, "{}",
         if cfg.exts.is_some() {
             format!("{} including files with extension: {}\n", Format::Warning("Only"), cfg.exts.as_ref().unwrap().connect(", "))
