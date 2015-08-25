@@ -1,3 +1,7 @@
+#![cfg_attr(feature = "unstable", feature(plugin))]
+#![cfg_attr(feature = "lints", plugin(clippy))]
+#![cfg_attr(feature = "lints", deny(warnings))]
+
 #[macro_use]
 extern crate clap;
 #[cfg(feature = "color")]

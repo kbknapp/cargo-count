@@ -13,8 +13,13 @@ regex = "~0.1.41"
 version = "~0.6.3"
 optional = true
 
+[dependencies.clippy]
+version = "~0.0.11"
+optional = true
+
 [features]
 default = ["color"]
 color = ["ansi_term"]
 debug = []
+lints = ["clippy", "unstable"]
 unstable = []
