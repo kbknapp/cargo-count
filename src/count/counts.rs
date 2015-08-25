@@ -1,6 +1,7 @@
 use std::io::{self, Read, Write};
 use std::fs::File;
 use std::path::{Path, PathBuf};
+use std::f64;
 
 use tabwriter::TabWriter;
 
@@ -256,7 +257,7 @@ impl<'c> Counts<'c> {
                     count.blanks(),
                     count.comments(),
                     count.code(),
-                    if usafe_per == 00f64 { "".to_owned() } else { format!("{} ({:.2}%)", count.usafe(), usafe_per) }
+                    if (usafe_per - 00f64).abs() < f64::EPSILON { "".to_owned() } else { format!("{} ({:.2}%)", count.usafe(), usafe_per) }
                     ));
             }
         }

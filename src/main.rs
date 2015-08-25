@@ -1,6 +1,8 @@
 #![cfg_attr(feature = "unstable", feature(plugin))]
 #![cfg_attr(feature = "lints", plugin(clippy))]
 #![cfg_attr(feature = "lints", deny(warnings))]
+#![cfg_attr(feature = "lints", allow(option_unwrap_used))]
+#![cfg_attr(feature = "lints", allow(deprecated))]
 
 #[macro_use]
 extern crate clap;
