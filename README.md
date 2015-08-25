@@ -116,3 +116,6 @@ of the current directory you could do '--exclude */test.rs'.
 ## License
 
 `cargo-count` is released under the terms of the MIT. See the LICENSE-MIT file for the details.
+
+## Dependencies Tree
+![cargo-count dependencies](cargo-count.png)
