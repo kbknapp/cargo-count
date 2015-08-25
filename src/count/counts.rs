@@ -41,46 +41,43 @@ impl<'c> Counts<'c> {
         debugln!("executing; fill_from; cfg={:?}", self.cfg);
         for path in &self.cfg.to_count {
             debugln!("iter; path={:?};", path);
-            if let Some(f) = path.to_str() {
-                let files = fsutil::get_all_files(f, &self.cfg.exclude);
+            let mut files = vec![];
+            fsutil::get_all_files(&mut files, &path, &self.cfg.exclude, self.cfg.follow_links);
 
-                for file in files {
-                    debugln!("iter; file={:?};", file);
-                    let extension = match Path::new(&file).extension() {
-                        Some(result) => {
-                            if let Some(ref exts) = self.cfg.exts {
-                                if !exts.contains(&result.to_str().unwrap_or("")) { continue }
-                            }
-                            result.to_str().unwrap()
-                        },
-                        None => continue,
-                    };
+            for file in files {
+                debugln!("iter; file={:?};", file);
+                let extension = match Path::new(&file).extension() {
+                    Some(result) => {
+                        if let Some(ref exts) = self.cfg.exts {
+                            if !exts.contains(&result.to_str().unwrap_or("")) { continue }
+                        }
+                        result.to_str().unwrap()
+                    },
+                    None => continue,
+                };
 
-                    debugln!("found extension: {:?}", extension);
-                    if let Some(pos_lang) = Language::from_ext(extension) {
-                        debugln!("Extension is valid");
-                        let mut found = false;
-                        debugln!("Searching for previous entries of that type");
-                        for l in self.counts.iter_mut() {
-                            if l.lang.extension() == extension {
-                                debugln!("Found");
-                                found = true;
-                                l.add_file(PathBuf::from(&file));
-                                break;
-                            }
+                debugln!("found extension: {:?}", extension);
+                if let Some(pos_lang) = Language::from_ext(extension) {
+                    debugln!("Extension is valid");
+                    let mut found = false;
+                    debugln!("Searching for previous entries of that type");
+                    for l in self.counts.iter_mut() {
+                        if l.lang.extension() == extension {
+                            debugln!("Found");
+                            found = true;
+                            l.add_file(PathBuf::from(&file));
+                            break;
                         }
-                        if !found {
-                            debugln!("Not found, creating new");
-                            let mut c = Count::new(pos_lang, self.cfg.thousands);
-                            c.add_file(PathBuf::from(&file));
-                            self.counts.push(c);
-                        }
-                    } else {
-                        debugln!("extension wasn't valid");
                     }
+                    if !found {
+                        debugln!("Not found, creating new");
+                        let mut c = Count::new(pos_lang, self.cfg.thousands);
+                        c.add_file(PathBuf::from(&file));
+                        self.counts.push(c);
+                    }
+                } else {
+                    debugln!("extension wasn't valid");
                 }
-            } else {
-                debugln!("path couldn't be converted to a str");
             }
         }
     }
