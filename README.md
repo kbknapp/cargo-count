@@ -85,6 +85,8 @@ USAGE:
     cargo count [FLAGS] [OPTIONS] [--] [ARGS]
 
 FLAGS:
+    -S, --follow-symlinks      Follows symlinks and counts source files it finds
+                               (Defaults to false when omitted)
     -h, --help                 Prints help information
         --unsafe-statistics    Displays lines and percentages of "unsafe" code
     -V, --version              Prints version information
@@ -101,6 +103,14 @@ OPTIONS:
 ARGS:
     to_count...    The files or directories (including children) to count
                    (defaults to current working directory when omitted)
+
+When using '--exclude <path>' the path given can either be relative to the current 
+directory, or absolute. When '<path>' is a file, it must be relative to the current 
+directory or it will not be found. Example, if the current directory has a child 
+directory named 'target' with a child fild 'test.rs' and you use `--exclude target/test.rs' 
+
+Globs are also supported. For example, to eclude 'test.rs' files from all child directories 
+of the current directory you could do '--exclude */test.rs'.
 ```
 
 ## License
