@@ -1,3 +1,13 @@
+<a name="v0.1.2"></a>
+### v0.1.2 (2015-08-25)
+
+
+#### Bug Fixes
+
+* **Symlinks:**  adds ability to optionally follow symlinks while counting ([d265980e](https://github.com/kbknapp/cargo-count/commit/d265980e8e06101c07dd3265dd2d66d834b09c58), closes [#6](https://github.com/kbknapp/cargo-count/issues/6), [#7](https://github.com/kbknapp/cargo-count/issues/7))
+
+
+
 <a name="v0.1.1"></a>
 ### v0.1.1 (2015-08-24)
 
