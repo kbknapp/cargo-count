@@ -11,7 +11,7 @@ pub type CliResult<T> = Result<T, CliError>;
 pub enum CliError {
     Generic(String),
     UnknownExt(String),
-    Unknown
+    Unknown,
 }
 
 // Copies clog::error::Error;
@@ -46,19 +46,19 @@ impl Display for CliError {
 }
 
 impl Error for CliError {
-    fn description<'a>(&'a self) -> &'a str {
+    fn description(&self) -> &str {
         match *self {
-            CliError::Generic(ref d)    => &*d,
+            CliError::Generic(ref d) => &*d,
             CliError::UnknownExt(ref d) => &*d,
-            CliError::Unknown           => "An unknown fatal error has occurred, please consider filing a bug-report!"
+            CliError::Unknown => "An unknown fatal error has occurred, please consider filing a bug-report!",
         }
     }
 
     fn cause(&self) -> Option<&Error> {
         match *self {
-            CliError::Generic(..)        => None,
-            CliError::UnknownExt(..)     => None,
-            CliError::Unknown            => None,
+            CliError::Generic(..) => None,
+            CliError::UnknownExt(..) => None,
+            CliError::Unknown => None,
         }
     }
 }

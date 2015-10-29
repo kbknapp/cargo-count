@@ -27,7 +27,7 @@ impl Count {
             blanks: 0,
             lines: 0,
             usafe: 0,
-            sep: sep
+            sep: sep,
         }
     }
 
@@ -71,13 +71,12 @@ impl Deref for Count {
 impl StdFmt::Display for Count {
     fn fmt(&self, f: &mut StdFmt::Formatter) -> StdFmt::Result {
         write!(f,
-            "{}\t{}\t{}\t{}\t{}\t{}",
-            self.lang,
-            self.total_files(),
-            self.lines(),
-            self.blanks(),
-            self.comments(),
-            self.code()
-        )
+               "{}\t{}\t{}\t{}\t{}\t{}",
+               self.lang,
+               self.total_files(),
+               self.lines(),
+               self.blanks(),
+               self.comments(),
+               self.code())
     }
 }

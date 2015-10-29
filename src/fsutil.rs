@@ -4,10 +4,15 @@ use std::path::PathBuf;
 
 use glob;
 
-pub fn get_all_files<'a>(v: &mut Vec<PathBuf>, path: &PathBuf, exclude: &Vec<PathBuf>, follow_links: bool) {
-    debugln!("executing; get_all_files; path={:?}; exclude={:?};", path, exclude);
+pub fn get_all_files<'a>(v: &mut Vec<PathBuf>,
+                         path: &PathBuf,
+                         exclude: &[PathBuf],
+                         follow_links: bool) {
+    debugln!("executing; get_all_files; path={:?}; exclude={:?};",
+             path,
+             exclude);
     if exclude.contains(path) {
-        return 
+        return;
     }
 
     debugln!("Getting metadata");
@@ -26,7 +31,9 @@ pub fn get_all_files<'a>(v: &mut Vec<PathBuf>, path: &PathBuf, exclude: &Vec<Pat
             v.push(path.clone());
         }
     } else {
-        for path_buf in glob::glob(path.to_str().unwrap_or("")).ok().expect("failed to get files from glob") {
+        for path_buf in glob::glob(path.to_str().unwrap_or(""))
+                            .ok()
+                            .expect("failed to get files from glob") {
             if let Ok(file_path) = path_buf {
                 if let Ok(result) = get_metadata(&file_path, follow_links) {
                     if result.is_dir() {

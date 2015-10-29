@@ -1,15 +1,15 @@
 use std::fmt;
 
 #[cfg(all(feature = "color", not(target_os = "windows")))]
-use ansi_term::Colour::{Red, Green, Yellow};
+use ansi_term::Colour::{Green, Red, Yellow};
 #[cfg(all(feature = "color", not(target_os = "windows")))]
 use ansi_term::ANSIString;
 
 #[allow(dead_code)]
 pub enum Format<T> {
-     Error(T),
-     Warning(T),
-     Good(T),
+    Error(T),
+    Warning(T),
+    Good(T),
 }
 
 #[cfg(all(feature = "color", not(target_os = "windows")))]
@@ -55,7 +55,11 @@ pub fn format_number(n: u64, sep: Option<char>) -> String {
     if let Some(sep) = sep {
         debugln!("There was a separator {}", sep);
         let mut ins_sep = s.len() % 3;
-        ins_sep = if ins_sep == 0 { 3 } else {ins_sep};
+        ins_sep = if ins_sep == 0 {
+            3
+        } else {
+            ins_sep
+        };
         let mut ret = vec![];
         for (i, c) in s.chars().enumerate() {
             debugln!("iter; c={}; ins_sep={}; ret={:?}", c, ins_sep, ret);
