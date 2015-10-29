@@ -24,7 +24,7 @@ pub struct Config<'a> {
     pub exclude: Vec<PathBuf>,
     pub exts: Option<Vec<&'a str>>,
     pub to_count: Vec<PathBuf>,
-    pub follow_links: bool
+    pub follow_links: bool,
 }
 
 impl<'a> Config<'a> {
@@ -32,13 +32,15 @@ impl<'a> Config<'a> {
         if let Some(ext_vec) = m.values_of("exts") {
             for e in ext_vec {
                 if let None = Language::from_ext(e) {
-                    return Err(CliError::UnknownExt(format!("unsupported source code extension '{}'", e.to_owned())))
+                    return Err(CliError::UnknownExt(format!("unsupported source code extension \
+                                                             '{}'",
+                                                            e.to_owned())));
                 }
             }
         }
         Ok(Config {
             verbose: m.is_present("verbose"),
-            thousands: m.value_of("sep").map(|s| s.chars().nth(0).unwrap() ),
+            thousands: m.value_of("sep").map(|s| s.chars().nth(0).unwrap()),
             usafe: m.is_present("unsafe-statistics"),
             utf8_rule: value_t!(m.value_of("rule"), Utf8Rule).unwrap_or(Utf8Rule::Strict),
             exclude: if let Some(v) = m.values_of("paths") {
@@ -57,7 +59,7 @@ impl<'a> Config<'a> {
                 ret
             } else {
                 debugln!("There aren't any, adding .git");
-                vec!(cli_try!(env::current_dir()).join(".git"))
+                vec![cli_try!(env::current_dir()).join(".git")]
             },
             to_count: if let Some(v) = m.values_of("to_count") {
                 debugln!("There are some");
@@ -72,7 +74,7 @@ impl<'a> Config<'a> {
                 vec![cli_try!(env::current_dir())]
             },
             exts: m.values_of("exts"),
-            follow_links: m.is_present("follow-symlinks")
+            follow_links: m.is_present("follow-symlinks"),
         })
     }
 }

@@ -12,3 +12,7 @@
 
 # temp files
 .*~
+
+# Backup Files
+*.orig
+*.bk
