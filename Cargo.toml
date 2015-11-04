@@ -2,6 +2,15 @@
 name = "cargo-count"
 version = "0.1.2"
 authors = ["Kevin K <kbknapp@gmail.com>"]
+exclude = ["*.png"]
+description = "Cargo subcommand for displaying statistics about projects, such as code, comments, and unsafe counters"
+repository = "https://github.com/kbknapp/cargo-count.git"
+readme = "README.md"
+license = "MIT"
+keywords = ["cargo", "subcommand", "statistics", "count", "lines"]
+
+[[bin]]
+name = "cargo-count"
 
 [dependencies]
 clap = "~1.4"
@@ -15,5 +24,6 @@ clippy = {version = "~0.0", optional = true}
 default = ["color"]
 color = ["ansi_term"]
 debug = []
-lints = ["clippy", "unstable"]
-unstable = []
+nightly = []
+lints = ["clippy", "nightly"]
+unstable = ["lints"]
