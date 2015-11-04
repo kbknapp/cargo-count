@@ -33,6 +33,17 @@ Totals:              6,128  549,129  70,021  136,659   342,413  12,529 (3.66%)
 
 The `--separator ,` sets a `,` character as the thousands separator, and `--unsafe-statistics` looks for, and counts lines of `unsafe`.
 
+## Installing
+
+`cargo-count` can be installed with `cargo install`
+
+```
+$ cargo install cargo-count
+```
+
+This may require a nightly version of `cargo` if you get an error about the `install` command not being found. You may also compile and install the traditional way by followin the instructions below.
+
+
 ## Compiling
 
 Follow these instructions to compile `cargo-count`, then skip down to Installation.
