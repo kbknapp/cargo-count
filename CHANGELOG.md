@@ -1,3 +1,25 @@
+<a name="v0.1.3"></a>
+### v0.1.3 (2015-11-04)
+
+
+#### Documentation
+
+*   adds cargo install instructions ([467dd945](https://github.com/kbknapp/cargo-count/commit/467dd9456e6b605e1cbf48e033db9053bcfe1735))
+
+#### Features
+
+*   uses clippy to lint dev builds ([e02b9d9b](https://github.com/kbknapp/cargo-count/commit/e02b9d9b7381385721466677f6c80bf340aae9ae))
+
+#### Improvements
+
+*   better comparison of f64 values thanks to clippy ([6c3a1362](https://github.com/kbknapp/cargo-count/commit/6c3a13625fc93038dc6ab799dc023f03d2a4bfe9))
+
+#### Bug Fixes
+
+*   fixes features declarations ([de98dde6](https://github.com/kbknapp/cargo-count/commit/de98dde6e4d207f88130b9668c4517adf719dac7))
+
+
+
 <a name="v0.1.2"></a>
 ### v0.1.2 (2015-08-25)
 
