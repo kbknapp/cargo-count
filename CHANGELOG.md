@@ -1,3 +1,13 @@
+<a name="v0.1.4"></a>
+### v0.1.4 (2015-11-14)
+
+
+#### Bug Fixes
+
+*   fixes building on windows due to upstream dep ([3333f252](https://github.com/kbknapp/cargo-count/commit/3333f252f4c7e5e1324d5a178b9f020823283bc7))
+
+
+
 <a name="v0.1.3"></a>
 ### v0.1.3 (2015-11-04)
 
