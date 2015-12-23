@@ -2,6 +2,7 @@ use std::io::{self, Read, Write};
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::f64;
+use std::env;
 
 use tabwriter::TabWriter;
 
@@ -12,6 +13,7 @@ use error::{CliError, CliResult};
 use fsutil;
 use fmt::{self, Format};
 use language::Language;
+use gitignore;
 
 pub struct Counts<'c> {
     cfg: &'c Config<'c>,
@@ -40,10 +42,21 @@ impl<'c> Counts<'c> {
 
     pub fn fill_from(&mut self) {
         debugln!("executing; fill_from; cfg={:?}", self.cfg);
+        let cd;
+        let gitignore = if self.cfg.all {
+            None
+        } else {
+            cd = env::current_dir().unwrap().join(".gitignore");
+            gitignore::File::new(&cd).ok()
+        };
         for path in &self.cfg.to_count {
             debugln!("iter; path={:?};", path);
             let mut files = vec![];
-            fsutil::get_all_files(&mut files, &path, &self.cfg.exclude, self.cfg.follow_links);
+            fsutil::get_all_files(&mut files,
+                                  &path,
+                                  &self.cfg.exclude,
+                                  self.cfg.follow_links,
+                                  &gitignore);
 
             for file in files {
                 debugln!("iter; file={:?};", file);

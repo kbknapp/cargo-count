@@ -18,6 +18,7 @@ arg_enum! {
 #[derive(Debug)]
 pub struct Config<'a> {
     pub verbose: bool,
+    pub all: bool,
     pub thousands: Option<char>,
     pub utf8_rule: Utf8Rule,
     pub usafe: bool,
@@ -40,6 +41,7 @@ impl<'a> Config<'a> {
         }
         Ok(Config {
             verbose: m.is_present("verbose"),
+            all: m.is_present("all"),
             thousands: m.value_of("sep").map(|s| s.chars().nth(0).unwrap()),
             usafe: m.is_present("unsafe-statistics"),
             utf8_rule: value_t!(m.value_of("rule"), Utf8Rule).unwrap_or(Utf8Rule::Strict),
