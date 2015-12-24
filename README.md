@@ -97,6 +97,7 @@ USAGE:
 
 FLAGS:
     -S, --follow-symlinks      Follows symlinks and counts source files it finds
+    -a, --all                  Do not ignore .gitignored paths
                                (Defaults to false when omitted)
     -h, --help                 Prints help information
         --unsafe-statistics    Displays lines and percentages of "unsafe" code

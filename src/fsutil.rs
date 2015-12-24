@@ -1,18 +1,27 @@
 use std::fs;
 use std::io::Result;
 use std::path::PathBuf;
+use gitignore::File;
 
 use glob;
 
 pub fn get_all_files<'a>(v: &mut Vec<PathBuf>,
                          path: &PathBuf,
                          exclude: &[PathBuf],
-                         follow_links: bool) {
-    debugln!("executing; get_all_files; path={:?}; exclude={:?};",
+                         follow_links: bool,
+                         gitignore: &Option<File>) {
+    debugln!("executing; get_all_files; path={:?}; exclude={:?}; all={:?}",
              path,
-             exclude);
+             exclude,
+             all);
     if exclude.contains(path) {
         return;
+    }
+
+    if let Some(ref f) = *gitignore {
+        if f.is_excluded(path).unwrap() {
+            return;
+        }
     }
 
     debugln!("Getting metadata");
@@ -24,7 +33,11 @@ pub fn get_all_files<'a>(v: &mut Vec<PathBuf>,
             for entry in dir {
                 let entry = entry.unwrap();
                 let file_path = entry.path();
-                get_all_files(v, &file_path.to_path_buf(), &exclude, follow_links);
+                get_all_files(v,
+                              &file_path.to_path_buf(),
+                              &exclude,
+                              follow_links,
+                              gitignore);
             }
         } else {
             debugln!("It's a file");
@@ -42,7 +55,11 @@ pub fn get_all_files<'a>(v: &mut Vec<PathBuf>,
                         for entry in dir {
                             let entry = entry.unwrap();
                             let file_path = entry.path();
-                            get_all_files(v, &file_path.to_path_buf(), &exclude, follow_links);
+                            get_all_files(v,
+                                          &file_path.to_path_buf(),
+                                          &exclude,
+                                          follow_links,
+                                          gitignore);
                         }
                     } else {
                         debugln!("It's a file");

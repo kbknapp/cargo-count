@@ -121,6 +121,7 @@
 //! FLAGS:
 //! -S, --follow-symlinks      Follows symlinks and counts source files it
 //! finds
+//! -a, --all                  Do not ignore .gitignored paths
 //!                                (Defaults to false when omitted)
 //!     -h, --help                 Prints help information
 //! --unsafe-statistics    Displays lines and percentages of "unsafe"
@@ -184,6 +185,7 @@ extern crate ansi_term;
 extern crate tabwriter;
 extern crate glob;
 extern crate regex;
+extern crate gitignore;
 
 use std::io::Write;
 #[cfg(feature = "debug")]
@@ -227,6 +229,7 @@ fn main() {
             .author("Kevin K. <kbknapp@gmail.com>")
             .about("Displays line counts of code for cargo projects")
             .args_from_usage("-e, --exclude [paths]...    'Files or directories to exclude (automatically includes \'.git\')'
+                              -a, --all                   'Do not ignore .gitignore'd paths'
                               --unsafe-statistics         'Displays lines and percentages of \"unsafe\" code'
                               -l, --language [exts]...    'Only count these languges (by source code extension){n}\
                                                            (i.e. \'-l js py cpp\')'
