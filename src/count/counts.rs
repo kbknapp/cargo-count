@@ -78,7 +78,7 @@ impl<'c> Counts<'c> {
                     let mut found = false;
                     debugln!("Searching for previous entries of that type");
                     for l in self.counts.iter_mut() {
-                        if l.lang.extension() == extension {
+                        if l.lang == pos_lang {
                             debugln!("Found");
                             found = true;
                             l.add_file(PathBuf::from(&file));
