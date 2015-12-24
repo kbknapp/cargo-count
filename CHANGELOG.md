@@ -1,3 +1,12 @@
+<a name="v0.2.1"></a>
+### v0.2.1 (2015-12-24)
+
+
+#### Improvements
+
+*   adds C, h++, cc, cxx, cp, and htm extensions ([ea4f540a](https://github.com/kbknapp/cargo-count/commit/ea4f540ac356dc946c42aaebe683f8c6d70fd362), closes [#19](https://github.com/kbknapp/cargo-count/issues/19))
+
+
 <a name="v0.2.0"></a>
 ## v0.2.0 (2015-12-24)
 
