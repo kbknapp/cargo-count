@@ -26,7 +26,13 @@ impl Language {
     pub fn from_ext(ext: &str) -> Option<Language> {
         match ext {
             "cpp" => Some(Language::Cpp),
+            "cp" => Some(Language::Cpp),
+            "cc" => Some(Language::Cpp),
+            "cxx" => Some(Language::Cpp),
+            "c++" => Some(Language::Cpp),
+            "C" => Some(Language::Cpp),
             "hpp" => Some(Language::Hpp),
+            "h++" => Some(Language::Hpp),
             "c" => Some(Language::C),
             "h" => Some(Language::Header),
             "css" => Some(Language::Css),
@@ -35,6 +41,7 @@ impl Language {
             "rs" => Some(Language::Rust),
             "xml" => Some(Language::Xml),
             "html" => Some(Language::Html),
+            "htm" => Some(Language::Html),
             "py" => Some(Language::Python),
             "rb" => Some(Language::Ruby),
             "php" => Some(Language::Php),
