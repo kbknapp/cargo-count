@@ -1,6 +1,6 @@
 [package]
 name = "cargo-count"
-version = "0.1.5"
+version = "0.2.0"
 authors = ["Kevin K <kbknapp@gmail.com>"]
 exclude = ["*.png"]
 description = "Cargo subcommand for displaying statistics about projects, such as code, comments, and unsafe counters"

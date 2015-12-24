@@ -1,3 +1,17 @@
+<a name="v0.2.0"></a>
+## v0.2.0 (2015-12-24)
+
+
+#### Improvements
+
+*   Ignore files in accordance with .gitignore ([a0c30706](https://github.com/kbknapp/cargo-count/commit/a0c307061413972b973f148802abe06e80a01099), Closes [#8](https://github.com/kbknapp/cargo-count/issues/8), [#9](https://github.com/kbknapp/cargo-count/issues/9))
+
+#### Bug Fixes
+
+*   fixes building on windows due to upstream dep ([3333f252](https://github.com/kbknapp/cargo-count/commit/3333f252f4c7e5e1324d5a178b9f020823283bc7))
+
+
+
 <a name="v0.1.4"></a>
 ### v0.1.4 (2015-11-14)
 
