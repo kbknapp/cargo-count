@@ -2,7 +2,7 @@ use std::fmt as StdFmt;
 
 use comment::Comment;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Language {
     C,
     Header,
@@ -70,27 +70,6 @@ impl Language {
             Language::Toml => "TOML",
             Language::Perl => "Perl",
             Language::Go => "Go",
-        }
-    }
-
-    pub fn extension(&self) -> &str {
-        match *self {
-            Language::Cpp => "cpp",
-            Language::Hpp => "hpp",
-            Language::C => "c",
-            Language::Header => "h",
-            Language::Css => "css",
-            Language::Java => "java",
-            Language::JavaScript => "js",
-            Language::Rust => "rs",
-            Language::Xml => "xml",
-            Language::Html => "html",
-            Language::Python => "py",
-            Language::Ruby => "rb",
-            Language::Php => "php",
-            Language::Perl => "pl",
-            Language::Toml => "toml",
-            Language::Go => "go",
         }
     }
 
