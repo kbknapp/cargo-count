@@ -1,3 +1,16 @@
+<a name="v0.2.2"></a>
+### v0.2.2 (2016-01-31)
+
+
+#### Improvements
+
+*   updates clap and makes some minor improvements to error handling ([ebb0d071](https://github.com/kbknapp/cargo-count/commit/ebb0d071c28c77c702ced191d948b6fc6fb681bf))
+
+#### Bug Fixes
+
+*   Batch results by language, not file extension ([1828538a](https://github.com/kbknapp/cargo-count/commit/1828538a9b30a8aec9fb059127d90721b4f9c29d), closes [#19](https://github.com/kbknapp/cargo-count/issues/19))
+
+
 <a name="v0.2.1"></a>
 ### v0.2.1 (2015-12-24)
 
