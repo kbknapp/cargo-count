@@ -1,6 +1,6 @@
 [package]
 name = "cargo-count"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Kevin K <kbknapp@gmail.com>"]
 exclude = ["*.png"]
 description = "Cargo subcommand for displaying statistics about projects, such as code, comments, and unsafe counters"
@@ -13,7 +13,7 @@ keywords = ["cargo", "subcommand", "statistics", "count", "lines"]
 name = "cargo-count"
 
 [dependencies]
-clap = "~1.5"
+clap = "~2.0.1"
 glob = "~0.2"
 tabwriter = "~0.1"
 regex = "~0.1"
@@ -27,4 +27,35 @@ color = ["ansi_term"]
 debug = []
 nightly = []
 lints = ["clippy", "nightly"]
-unstable = ["lints"]
+unstable = []
+travis = ["lints"]
+
+[profile.release]
+opt-level = 3
+lto = true
+debug = false
+debug-assertions = false
+rpath = false
+
+[profile.dev]
+opt-level = 0
+lto = false
+debug = true
+debug-assertions = true
+rpath = false
+codegen-units = 4
+
+[profile.test]
+opt-level = 1
+lto = false
+debug = true
+debug-assertions = true
+rpath = false
+codegen-units = 2
+
+[profile.bench]
+opt-level = 3
+lto = true
+debug = false
+debug-assertions = false
+rpath = false
