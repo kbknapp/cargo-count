@@ -173,7 +173,8 @@
 #![deny(missing_docs,
         missing_debug_implementations,
         missing_copy_implementations,
-        trivial_casts, trivial_numeric_casts,
+        trivial_casts,
+        trivial_numeric_casts,
         unsafe_code,
         unused_import_braces,
         unused_qualifications)]
@@ -195,7 +196,7 @@ use clap::{App, AppSettings, Arg, SubCommand};
 
 use config::Config;
 use count::Counts;
-use error::{CliError, CliResult};
+use error::CliResult;
 use fmt::Format;
 
 #[macro_use]
@@ -208,7 +209,14 @@ mod fmt;
 mod fsutil;
 mod language;
 
-static UTF8_RULES: [&'static str; 3] = ["strict", "lossy", "ignore"];
+arg_enum! {
+    #[derive(Debug, Copy, Clone)]
+    enum Utf8Rule {
+        Strict,
+        Lossy,
+        None
+    }
+}
 
 fn main() {
     debugln!("executing; cmd=cargo-count; args={:?}",
@@ -228,21 +236,21 @@ fn main() {
         .subcommand(SubCommand::with_name("count")
             .author("Kevin K. <kbknapp@gmail.com>")
             .about("Displays line counts of code for cargo projects")
-            .args_from_usage("-e, --exclude [paths]...    'Files or directories to exclude (automatically includes \'.git\')'
+            .args_from_usage("-e, --exclude [PATH]...     'Files or directories to exclude (automatically includes \'.git\')'
                               -a, --all                   'Do not ignore .gitignore'd paths'
                               --unsafe-statistics         'Displays lines and percentages of \"unsafe\" code'
-                              -l, --language [exts]...    'Only count these languges (by source code extension){n}\
+                              -l, --language [EXT]...     'Only count these languges (by source code extension){n}\
                                                            (i.e. \'-l js py cpp\')'
                               -v, --verbose               'Print verbose output'
                               -S, --follow-symlinks       'Follows symlinks and counts source files it finds{n}(Defaults to false when omitted)'
-                              [to_count]...               'The files or directories (including children) to count{n}\
+                              [FILE]...                   'The files or directories (including children) to count{n}\
                                                            (defaults to current working directory when omitted)'")
-            .arg(Arg::from_usage("-s, --separator [sep]   'Set the thousands separator for pretty printing'")
+            .arg(Arg::from_usage("-s, --separator [CHAR]  'Set the thousands separator for pretty printing'")
                 .validator(single_char))
-            .arg(Arg::from_usage("--utf8-rule [rule]     'Sets the UTF-8 parsing rule (Defaults to \'strict\'){n}'")
-                .possible_values(&UTF8_RULES))
-            .after_help("When using '--exclude <path>' the path given can either be relative to the current \n\
-                         directory, or absolute. When '<path>' is a file, it must be relative to the current \n\
+            .arg(Arg::from_usage("--utf8-rule [RULE]      'Sets the UTF-8 parsing rule (Defaults to \'strict\'){n}'")
+                .possible_values(&Utf8Rule::variants()))
+            .after_help("When using '--exclude <PATH>' the path given can either be relative to the current \n\
+                         directory, or absolute. When '<PATH>' is a file, it must be relative to the current \n\
                          directory or it will not be found. Example, if the current directory has a child \n\
                          directory named 'target' with a child fild 'test.rs' and you use `--exclude target/test.rs' \n\
                          \n\
@@ -250,6 +258,9 @@ fn main() {
                          of the current directory you could do '--exclude */test.rs'."))
         .get_matches();
 
+    // We match on "count" becuase cargo includes the subcommand (in this case "count")
+    // as one of the arguments passed to external subcommands. So this binary receives "count" as
+    // the second argument (after binary name), thus making `clap` think it's a subcommand
     if let Some(m) = m.subcommand_matches("count") {
         let cfg = Config::from_matches(m).unwrap_or_else(|e| e.exit());
         println!("Gathering information...");
@@ -279,8 +290,8 @@ fn execute(cfg: Config) -> CliResult<()> {
 
     let mut counts = Counts::new(&cfg);
     counts.fill_from();
-    cli_try!(counts.count());
-    cli_try!(counts.write_results());
+    try!(counts.count());
+    try!(counts.write_results());
     Ok(())
 }
 

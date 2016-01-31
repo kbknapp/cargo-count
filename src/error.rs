@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::fmt::Result as FmtResult;
+use std::io;
 
 use fmt::Format;
 
@@ -11,6 +12,7 @@ pub type CliResult<T> = Result<T, CliError>;
 pub enum CliError {
     Generic(String),
     UnknownExt(String),
+    IoError(io::Error),
     Unknown,
 }
 
@@ -50,6 +52,7 @@ impl Error for CliError {
         match *self {
             CliError::Generic(ref d) => &*d,
             CliError::UnknownExt(ref d) => &*d,
+            CliError::IoError(ref e) => e.description(),
             CliError::Unknown => "An unknown fatal error has occurred, please consider filing a bug-report!",
         }
     }
@@ -58,7 +61,14 @@ impl Error for CliError {
         match *self {
             CliError::Generic(..) => None,
             CliError::UnknownExt(..) => None,
+            CliError::IoError(ref e) => Some(e),
             CliError::Unknown => None,
         }
+    }
+}
+
+impl From<io::Error> for CliError {
+    fn from(e: io::Error) -> Self {
+        CliError::IoError(e)
     }
 }

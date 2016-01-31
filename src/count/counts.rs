@@ -9,7 +9,7 @@ use tabwriter::TabWriter;
 use comment::Comment;
 use config::{Config, Utf8Rule};
 use count::Count;
-use error::{CliError, CliResult};
+use error::CliResult;
 use fsutil;
 use fmt::{self, Format};
 use language::Language;
@@ -110,7 +110,7 @@ impl<'c> Counts<'c> {
                 debugln!("iter; file={:?};", file);
                 let mut buffer = String::new();
 
-                let mut file_ref = cli_try!(File::open(&file));
+                let mut file_ref = try!(File::open(&file));
 
                 match self.cfg.utf8_rule {
                     Utf8Rule::Ignore => {
@@ -120,11 +120,11 @@ impl<'c> Counts<'c> {
                     }
                     Utf8Rule::Lossy => {
                         let mut vec_buf = vec![];
-                        cli_try!(file_ref.read_to_end(&mut vec_buf));
+                        try!(file_ref.read_to_end(&mut vec_buf));
                         buffer = String::from_utf8_lossy(&vec_buf).into_owned();
                     }
                     Utf8Rule::Strict => {
-                        cli_try!(file_ref.read_to_string(&mut buffer));
+                        try!(file_ref.read_to_string(&mut buffer));
                     }
                 }
                 let mut is_in_comments = false;
@@ -266,14 +266,14 @@ impl<'c> Counts<'c> {
 
     pub fn write_results(&mut self) -> CliResult<()> {
         let mut w = TabWriter::new(vec![]);
-        cli_try!(write!(w,
+        try!(write!(w,
                         "\tLanguage\tFiles\tLines\tBlanks\tComments\tCode{}\n",
                         if self.cfg.usafe {
                             "\tUnsafe (%)"
                         } else {
                             ""
                         }));
-        cli_try!(write!(w,
+        try!(write!(w,
                         "\t--------\t-----\t-----\t------\t--------\t----{}\n",
                         if self.cfg.usafe {
                             "\t----------"
@@ -282,10 +282,10 @@ impl<'c> Counts<'c> {
                         }));
         for count in &self.counts {
             if !self.cfg.usafe {
-                cli_try!(write!(w, "\t{}\n", count));
+                try!(write!(w, "\t{}\n", count));
             } else {
                 let usafe_per = (count.usafe as f64 / count.code as f64) * 100.00f64;
-                cli_try!(write!(w,
+                try!(write!(w,
                                 "\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
                                 count.lang.name(),
                                 count.total_files(),
@@ -300,14 +300,14 @@ impl<'c> Counts<'c> {
                                 }));
             }
         }
-        cli_try!(write!(w,
+        try!(write!(w,
                         "\t--------\t-----\t-----\t------\t--------\t----{}\n",
                         if self.cfg.usafe {
                             "\t----------"
                         } else {
                             ""
                         }));
-        cli_try!(write!(w,
+        try!(write!(w,
                         "{}\t\t{}\t{}\t{}\t{}\t{}{}\n",
                         "Totals:",
                         fmt::format_number(self.tot as u64, self.cfg.thousands),
@@ -323,7 +323,7 @@ impl<'c> Counts<'c> {
                             "".to_owned()
                         }));
 
-        cli_try!(w.flush());
+        try!(w.flush());
 
         verboseln!(self.cfg,
                    "{} {}",
