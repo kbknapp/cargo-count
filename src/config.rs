@@ -29,7 +29,7 @@ pub struct Config<'a> {
 }
 
 impl<'a> Config<'a> {
-    pub fn from_matches(m: &'a ArgMatches<'a, 'a>) -> CliResult<Self> {
+    pub fn from_matches(m: &'a ArgMatches<'a>) -> CliResult<Self> {
         if let Some(ext_vec) = m.values_of("exts") {
             for e in ext_vec {
                 if let None = Language::from_ext(e) {
@@ -75,7 +75,7 @@ impl<'a> Config<'a> {
                 debugln!("There aren't any, using cwd");
                 vec![cli_try!(env::current_dir())]
             },
-            exts: m.values_of("exts"),
+            exts: m.values_of("exts").map(|v| v.collect()),
             follow_links: m.is_present("follow-symlinks"),
         })
     }
