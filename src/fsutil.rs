@@ -5,7 +5,7 @@ use gitignore::File;
 
 use glob;
 
-pub fn get_all_files<'a>(v: &mut Vec<PathBuf>,
+pub fn get_all_files(v: &mut Vec<PathBuf>,
                          path: &PathBuf,
                          exclude: &[PathBuf],
                          follow_links: bool,

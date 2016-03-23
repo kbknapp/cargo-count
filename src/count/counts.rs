@@ -98,6 +98,7 @@ impl<'c> Counts<'c> {
         }
     }
 
+    #[cfg_attr(feature = "lints", allow(cyclomatic_complexity, trivial_regex))]
     pub fn count(&mut self) -> CliResult<()> {
         for count in self.counts.iter_mut() {
             debugln!("iter; count={:?};", count);
