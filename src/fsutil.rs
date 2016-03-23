@@ -5,7 +5,7 @@ use gitignore::File;
 
 use glob;
 
-pub fn get_all_files<'a>(v: &mut Vec<PathBuf>,
+pub fn get_all_files(v: &mut Vec<PathBuf>,
                          path: &PathBuf,
                          exclude: &[PathBuf],
                          follow_links: bool,
@@ -45,7 +45,6 @@ pub fn get_all_files<'a>(v: &mut Vec<PathBuf>,
         }
     } else {
         for path_buf in glob::glob(path.to_str().unwrap_or(""))
-                            .ok()
                             .expect("failed to get files from glob") {
             if let Ok(file_path) = path_buf {
                 if let Ok(result) = get_metadata(&file_path, follow_links) {

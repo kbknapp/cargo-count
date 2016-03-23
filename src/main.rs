@@ -231,10 +231,9 @@ fn main() {
             .args_from_usage("-e, --exclude [paths]...    'Files or directories to exclude (automatically includes \'.git\')'
                               -a, --all                   'Do not ignore .gitignore'd paths'
                               --unsafe-statistics         'Displays lines and percentages of \"unsafe\" code'
-                              -l, --language [exts]...    'Only count these languges (by source code extension){n}\
-                                                           (i.e. \'-l js py cpp\')'
+                              -l, --language [exts]...    'Only count these languges (i.e. \'-l js py cpp\')'
                               -v, --verbose               'Print verbose output'
-                              -S, --follow-symlinks       'Follows symlinks and counts source files it finds{n}(Defaults to false when omitted)'
+                              -S, --follow-symlinks       'Follows symlinks and counts source files it finds (Defaults to false when omitted)'
                               [to_count]...               'The files or directories (including children) to count{n}\
                                                            (defaults to current working directory when omitted)'")
             .arg(Arg::from_usage("-s, --separator [sep]   'Set the thousands separator for pretty printing'")
@@ -285,12 +284,12 @@ fn execute(cfg: Config) -> CliResult<()> {
 }
 
 fn single_char(s: String) -> Result<(), String> {
-    if s.len() != 1 {
+    if s.len() == 1 {
+        Ok(())
+    } else {
         Err(
           format!(
             "the --separator argument option only accepts a single character but found '{}'",
              Format::Warning(s)))
-    } else {
-        Ok(())
     }
 }

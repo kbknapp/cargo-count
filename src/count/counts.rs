@@ -98,6 +98,7 @@ impl<'c> Counts<'c> {
         }
     }
 
+    #[cfg_attr(feature = "lints", allow(cyclomatic_complexity, trivial_regex))]
     pub fn count(&mut self) -> CliResult<()> {
         for count in self.counts.iter_mut() {
             debugln!("iter; count={:?};", count);
@@ -281,9 +282,7 @@ impl<'c> Counts<'c> {
                             ""
                         }));
         for count in &self.counts {
-            if !self.cfg.usafe {
-                cli_try!(write!(w, "\t{}\n", count));
-            } else {
+            if self.cfg.usafe {
                 let usafe_per = (count.usafe as f64 / count.code as f64) * 100.00f64;
                 cli_try!(write!(w,
                                 "\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
@@ -298,6 +297,8 @@ impl<'c> Counts<'c> {
                                 } else {
                                     format!("{} ({:.2}%)", count.usafe(), usafe_per)
                                 }));
+            } else {
+                cli_try!(write!(w, "\t{}\n", count));
             }
         }
         cli_try!(write!(w,
@@ -333,7 +334,6 @@ impl<'c> Counts<'c> {
             write!(io::stdout(),
                    "{}",
                    String::from_utf8(w.unwrap()).ok().expect("failed to get valid UTF-8 String"))
-                .ok()
                 .expect("failed to write output");
         } else {
             println!("\n\tNo source files were found matching the specified criteria");

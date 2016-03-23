@@ -13,13 +13,13 @@ keywords = ["cargo", "subcommand", "statistics", "count", "lines"]
 name = "cargo-count"
 
 [dependencies]
-clap = "~1.5"
+clap = "~2.2.1"
 glob = "~0.2"
 tabwriter = "~0.1"
 regex = "~0.1"
 gitignore = "~1"
 ansi_term = {version = "~0.7", optional = true}
-clippy    = {version = "~0.0", optional = true}
+clippy    = {version = "=0.0.55", optional = true}
 
 [features]
 default = ["color"]
