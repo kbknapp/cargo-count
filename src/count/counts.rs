@@ -283,7 +283,11 @@ impl<'c> Counts<'c> {
                         }));
         for count in &self.counts {
             if self.cfg.usafe {
-                let usafe_per = (count.usafe as f64 / count.code as f64) * 100.00f64;
+                let usafe_per = if count.code != 0 {
+                    (count.usafe as f64 / count.code as f64) * 100.00f64
+                } else {
+                    0f64
+                };
                 cli_try!(write!(w,
                                 "\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
                                 count.lang.name(),
