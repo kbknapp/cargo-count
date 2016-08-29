@@ -20,6 +20,10 @@ pub enum Language {
     Xml,
     Toml,
     Go,
+    Assembly,
+    Shell,
+    D,
+    Nim,
 }
 
 impl Language {
@@ -41,6 +45,13 @@ impl Language {
             "toml" => Some(Language::Toml),
             "pl" => Some(Language::Perl),
             "go" => Some(Language::Go),
+            "agc" | "asm" | "a51" | "inc" | "nasm" | "s" | "ms" => Some(Language::Assembly),
+            "ps1" | "psd1" | "psm1" | "sh" | "bash" | "bats" | "cgi" | "command" | "fcgi" |
+            "ksh" | "sh.in" | "tmux" | "tool" | "zsh" | "tcsh" | "csh" | "fish" => {
+                Some(Language::Shell)
+            }
+            "d" | "di" => Some(Language::D),
+            "nim" | "nimrod" => Some(Language::Nim),
             _ => None,
         }
     }
@@ -63,6 +74,10 @@ impl Language {
             Language::Toml => "TOML",
             Language::Perl => "Perl",
             Language::Go => "Go",
+            Language::Assembly => "Assembly",
+            Language::Shell => "Shell",
+            Language::D => "D",
+            Language::Nim => "Nim",
         }
     }
 
@@ -72,7 +87,9 @@ impl Language {
             Language::Cpp |
             Language::Hpp |
             Language::Header |
-            Language::Rust => true,
+            Language::Rust |
+            Language::Assembly |
+            Language::Nim => true,
             _ => false,
         }
     }
@@ -93,7 +110,7 @@ impl StdFmt::Display for Language {
 
 
 impl Comment for Language {
-	type Rep = &'static str;
+    type Rep = &'static str;
 
     fn single(&self) -> Option<Vec<<Self as Comment>::Rep>> {
         match *self {
@@ -105,15 +122,18 @@ impl Comment for Language {
             Language::Java |
             Language::JavaScript |
             Language::Rust |
-            Language::Go => Some(vec!["//"]),
+            Language::Go |
+            Language::D => Some(vec!["//"]),
             Language::Php => Some(vec!["//", "#"]),
             Language::Xml |
             Language::Html => Some(vec!["<!--"]),
             Language::Ruby |
             Language::Python |
             Language::Toml |
-            Language::Perl => Some(vec!["#"]),
-
+            Language::Perl |
+            Language::Assembly |
+            Language::Shell |
+            Language::Nim => Some(vec!["#"]),
         }
     }
 
@@ -128,13 +148,17 @@ impl Comment for Language {
             Language::JavaScript |
             Language::Go |
             Language::Rust |
-            Language::Php => Some("/*"),
+            Language::Php |
+            Language::D => Some("/*"),
             Language::Xml |
             Language::Html => Some("<!--"),
             Language::Ruby => Some("=begin"),
             Language::Python => Some("'''"),
+            Language::Nim => Some("#["),
             Language::Toml |
-            Language::Perl => None,
+            Language::Perl |
+            Language::Assembly |
+            Language::Shell => None,
         }
     }
 
@@ -149,13 +173,17 @@ impl Comment for Language {
             Language::Go |
             Language::JavaScript |
             Language::Rust |
-            Language::Php => Some("*/"),
+            Language::Php |
+            Language::D => Some("*/"),
             Language::Xml |
             Language::Html => Some("-->"),
             Language::Ruby => Some("=end"),
             Language::Python => Some("'''"),
+            Language::Nim => Some("]#"),
             Language::Toml |
-            Language::Perl => None,
+            Language::Perl |
+            Language::Assembly |
+            Language::Shell => None,
         }
     }
 }
