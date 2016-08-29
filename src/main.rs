@@ -187,7 +187,6 @@ extern crate glob;
 extern crate regex;
 extern crate gitignore;
 
-use std::io::Write;
 #[cfg(feature = "debug")]
 use std::env;
 
