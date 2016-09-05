@@ -25,7 +25,7 @@ pub fn get_all_files(v: &mut Vec<PathBuf>,
     }
 
     debugln!("Getting metadata");
-    if let Ok(result) = get_metadata(&path, follow_links) {
+    if let Ok(result) = get_metadata(path, follow_links) {
         debugln!("Found");
         if result.is_dir() {
             debugln!("It's a dir");
@@ -35,7 +35,7 @@ pub fn get_all_files(v: &mut Vec<PathBuf>,
                 let file_path = entry.path();
                 get_all_files(v,
                               &file_path.to_path_buf(),
-                              &exclude,
+                              exclude,
                               follow_links,
                               gitignore);
             }
@@ -56,7 +56,7 @@ pub fn get_all_files(v: &mut Vec<PathBuf>,
                             let file_path = entry.path();
                             get_all_files(v,
                                           &file_path.to_path_buf(),
-                                          &exclude,
+                                          exclude,
                                           follow_links,
                                           gitignore);
                         }
