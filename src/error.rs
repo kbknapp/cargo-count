@@ -1,8 +1,8 @@
-use std::error::Error;
+
+
+use fmt::Format;use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::fmt::Result as FmtResult;
-
-use fmt::Format;
 
 pub type CliResult<T> = Result<T, CliError>;
 

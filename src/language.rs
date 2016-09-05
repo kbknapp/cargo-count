@@ -1,6 +1,7 @@
-use std::fmt as StdFmt;
+
 
 use comment::Comment;
+use std::fmt as StdFmt;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Language {
@@ -83,13 +84,8 @@ impl Language {
 
     pub fn is_unsafe(&self) -> bool {
         match *self {
-            Language::C |
-            Language::Cpp |
-            Language::Hpp |
-            Language::Header |
-            Language::Rust |
-            Language::Assembly |
-            Language::Nim => true,
+            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Rust |
+            Language::Assembly | Language::Nim => true,
             _ => false,
         }
     }
@@ -114,76 +110,40 @@ impl Comment for Language {
 
     fn single(&self) -> Option<Vec<<Self as Comment>::Rep>> {
         match *self {
-            Language::C |
-            Language::Cpp |
-            Language::Hpp |
-            Language::Header |
-            Language::Css |
-            Language::Java |
-            Language::JavaScript |
-            Language::Rust |
-            Language::Go |
-            Language::D => Some(vec!["//"]),
+            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Css |
+            Language::Java | Language::JavaScript | Language::Rust | Language::Go | Language::D => {
+                Some(vec!["//"])
+            }
             Language::Php => Some(vec!["//", "#"]),
-            Language::Xml |
-            Language::Html => Some(vec!["<!--"]),
-            Language::Ruby |
-            Language::Python |
-            Language::Toml |
-            Language::Perl |
-            Language::Assembly |
-            Language::Shell |
-            Language::Nim => Some(vec!["#"]),
+            Language::Xml | Language::Html => Some(vec!["<!--"]),
+            Language::Ruby | Language::Python | Language::Toml | Language::Perl |
+            Language::Assembly | Language::Shell | Language::Nim => Some(vec!["#"]),
         }
     }
 
     fn multi_start(&self) -> Option<<Self as Comment>::Rep> {
         match *self {
-            Language::C |
-            Language::Cpp |
-            Language::Hpp |
-            Language::Header |
-            Language::Css |
-            Language::Java |
-            Language::JavaScript |
-            Language::Go |
-            Language::Rust |
-            Language::Php |
-            Language::D => Some("/*"),
-            Language::Xml |
-            Language::Html => Some("<!--"),
+            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Css |
+            Language::Java | Language::JavaScript | Language::Go | Language::Rust |
+            Language::Php | Language::D => Some("/*"),
+            Language::Xml | Language::Html => Some("<!--"),
             Language::Ruby => Some("=begin"),
             Language::Python => Some("'''"),
             Language::Nim => Some("#["),
-            Language::Toml |
-            Language::Perl |
-            Language::Assembly |
-            Language::Shell => None,
+            Language::Toml | Language::Perl | Language::Assembly | Language::Shell => None,
         }
     }
 
     fn multi_end(&self) -> Option<<Self as Comment>::Rep> {
         match *self {
-            Language::C |
-            Language::Cpp |
-            Language::Hpp |
-            Language::Header |
-            Language::Css |
-            Language::Java |
-            Language::Go |
-            Language::JavaScript |
-            Language::Rust |
-            Language::Php |
-            Language::D => Some("*/"),
-            Language::Xml |
-            Language::Html => Some("-->"),
+            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Css |
+            Language::Java | Language::Go | Language::JavaScript | Language::Rust |
+            Language::Php | Language::D => Some("*/"),
+            Language::Xml | Language::Html => Some("-->"),
             Language::Ruby => Some("=end"),
             Language::Python => Some("'''"),
             Language::Nim => Some("]#"),
-            Language::Toml |
-            Language::Perl |
-            Language::Assembly |
-            Language::Shell => None,
+            Language::Toml | Language::Perl | Language::Assembly | Language::Shell => None,
         }
     }
 }

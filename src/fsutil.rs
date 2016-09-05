@@ -1,15 +1,15 @@
-use std::fs;
-use std::io::Result;
-use std::path::PathBuf;
+
 use gitignore::File;
 
-use glob;
+use glob;use std::fs;
+use std::io::Result;
+use std::path::PathBuf;
 
 pub fn get_all_files(v: &mut Vec<PathBuf>,
-                         path: &PathBuf,
-                         exclude: &[PathBuf],
-                         follow_links: bool,
-                         gitignore: &Option<File>) {
+                     path: &PathBuf,
+                     exclude: &[PathBuf],
+                     follow_links: bool,
+                     gitignore: &Option<File>) {
     debugln!("executing; get_all_files; path={:?}; exclude={:?}; all={:?}",
              path,
              exclude,
@@ -45,7 +45,7 @@ pub fn get_all_files(v: &mut Vec<PathBuf>,
         }
     } else {
         for path_buf in glob::glob(path.to_str().unwrap_or(""))
-                            .expect("failed to get files from glob") {
+            .expect("failed to get files from glob") {
             if let Ok(file_path) = path_buf {
                 if let Ok(result) = get_metadata(&file_path, follow_links) {
                     if result.is_dir() {
