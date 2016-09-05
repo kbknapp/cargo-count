@@ -227,25 +227,29 @@ fn main() {
         .subcommand(SubCommand::with_name("count")
             .author("Kevin K. <kbknapp@gmail.com>")
             .about("Displays line counts of code for cargo projects")
-            .args_from_usage("-e, --exclude [paths]...    'Files or directories to exclude (automatically includes \'.git\')'
-                              -a, --all                   'Do not ignore .gitignore'd paths'
-                              --unsafe-statistics         'Displays lines and percentages of \"unsafe\" code'
-                              -l, --language [exts]...    'Only count these languges (i.e. \'-l js py cpp\')'
-                              -v, --verbose               'Print verbose output'
-                              -S, --follow-symlinks       'Follows symlinks and counts source files it finds (Defaults to false when omitted)'
-                              [to_count]...               'The files or directories (including children) to count{n}\
-                                                           (defaults to current working directory when omitted)'")
-            .arg(Arg::from_usage("-s, --separator [sep]   'Set the thousands separator for pretty printing'")
+            .args_from_usage("
+-e, --exclude [PATH]...    'Files or directories to exclude (automatically includes \'.git\')'
+-a, --all                  'Do not ignore .gitignore'd paths'
+--unsafe-statistics        'Displays lines and percentages of \"unsafe\" code'
+-l, --language [EXT]...    'Only count these languges (i.e. \'-l js py cpp\')'
+-v, --verbose              'Print verbose output'
+-S, --follow-symlinks      'Follows symlinks and counts source files it finds [default: false]'
+[PATH]...                  'The files or directories (including children) to count (defaults to \
+                            current working directory when omitted)'")
+            .arg(Arg::from_usage(
+                    "-s, --separator [CHAR]   'Set the thousands separator for pretty printing'")
                 .validator(single_char))
-            .arg(Arg::from_usage("--utf8-rule [rule]     'Sets the UTF-8 parsing rule (Defaults to \'strict\'){n}'")
+            .arg(Arg::from_usage("--utf8-rule [RULE]     'Sets the UTF-8 parsing rule'")
+                .default_value("strict")
                 .possible_values(&UTF8_RULES))
-            .after_help("When using '--exclude <path>' the path given can either be relative to the current \n\
-                         directory, or absolute. When '<path>' is a file, it must be relative to the current \n\
-                         directory or it will not be found. Example, if the current directory has a child \n\
-                         directory named 'target' with a child fild 'test.rs' and you use `--exclude target/test.rs' \n\
-                         \n\
-                         Globs are also supported. For example, to eclude 'test.rs' files from all child directories \n\
-                         of the current directory you could do '--exclude */test.rs'."))
+            .after_help("\
+When using '--exclude <PATH>' the path given can either be relative to the current directory, or \
+absolute. When '--exclude <PATH>' is a file or path, it must be relative to the current directory \
+or it will not be found. Example, if the current directory has a child directory named 'target' \
+with a child fild 'test.rs' and you use `--exclude target/test.rs'
+{n}{n}\
+Globs are also supported. For example, to eclude 'test.rs' files from all child directories of \
+the current directory you could do '--exclude */test.rs'."))
         .get_matches();
 
     if let Some(m) = m.subcommand_matches("count") {
