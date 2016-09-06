@@ -39,20 +39,16 @@ macro_rules! verboseln(
     })
 );
 
-macro_rules! regex(
-    ($s:expr) => ({::regex::Regex::new($s).unwrap()})
-);
-
 #[cfg(feature = "debug")]
 macro_rules! debugln {
-    ($fmt:expr) => (println!(concat!("**DEBUG** ", $fmt)));
-    ($fmt:expr, $($arg:tt)*) => (println!(concat!("**DEBUG** ",$fmt), $($arg)*));
+    ($fmt:expr) => (println!(concat!("*DEBUG:cargo-count: ", $fmt)));
+    ($fmt:expr, $($arg:tt)*) => (println!(concat!("*DEBUG:cargo-count: ",$fmt), $($arg)*));
 }
 
 #[cfg(feature = "debug")]
 macro_rules! debug {
-    ($fmt:expr) => (print!(concat!("**DEBUG** ", $fmt)));
-    ($fmt:expr, $($arg:tt)*) => (println!(concat!("**DEBUG** ",$fmt), $($arg)*));
+    ($fmt:expr) => (print!(concat!("*DEBUG:cargo-count: ", $fmt)));
+    ($fmt:expr, $($arg:tt)*) => (println!(concat!("*DEBUG:cargo-count: ",$fmt), $($arg)*));
 }
 
 #[cfg(not(feature = "debug"))]

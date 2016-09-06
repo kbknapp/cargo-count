@@ -1,19 +1,21 @@
-use std::io::{self, Read, Write};
-use std::fs::File;
-use std::path::{Path, PathBuf};
-use std::f64;
-use std::env;
 
-use tabwriter::TabWriter;
 
 use comment::Comment;
 use config::{Config, Utf8Rule};
 use count::Count;
 use error::{CliError, CliResult};
-use fsutil;
 use fmt::{self, Format};
-use language::Language;
+use fsutil;
 use gitignore;
+use language::Language;
+use regex::Regex;
+use std::env;
+use std::f64;
+use std::fs::File;
+use std::io::{self, Read, Write};
+use std::path::{Path, PathBuf};
+
+use tabwriter::TabWriter;
 
 pub struct Counts<'c> {
     cfg: &'c Config<'c>,
@@ -53,7 +55,7 @@ impl<'c> Counts<'c> {
             debugln!("iter; path={:?};", path);
             let mut files = vec![];
             fsutil::get_all_files(&mut files,
-                                  &path,
+                                  path,
                                   &self.cfg.exclude,
                                   self.cfg.follow_links,
                                   &gitignore);
@@ -103,9 +105,9 @@ impl<'c> Counts<'c> {
         for count in self.counts.iter_mut() {
             debugln!("iter; count={:?};", count);
             let re = if let Some(kw) = count.lang.unsafe_keyword() {
-                regex!(&*format!("(.*?)([:^word:]{}[:^word:])(.*)", kw))
+                Regex::new(&*format!("(.*?)([:^word:]{}[:^word:])(.*)", kw)).unwrap()
             } else {
-                regex!("")
+                Regex::new("").unwrap()
             };
             for file in count.files.iter() {
                 debugln!("iter; file={:?};", file);
@@ -269,18 +271,10 @@ impl<'c> Counts<'c> {
         let mut w = TabWriter::new(vec![]);
         cli_try!(write!(w,
                         "\tLanguage\tFiles\tLines\tBlanks\tComments\tCode{}\n",
-                        if self.cfg.usafe {
-                            "\tUnsafe (%)"
-                        } else {
-                            ""
-                        }));
+                        if self.cfg.usafe { "\tUnsafe (%)" } else { "" }));
         cli_try!(write!(w,
                         "\t--------\t-----\t-----\t------\t--------\t----{}\n",
-                        if self.cfg.usafe {
-                            "\t----------"
-                        } else {
-                            ""
-                        }));
+                        if self.cfg.usafe { "\t----------" } else { "" }));
         for count in &self.counts {
             if self.cfg.usafe {
                 let usafe_per = if count.code != 0 {
@@ -307,11 +301,7 @@ impl<'c> Counts<'c> {
         }
         cli_try!(write!(w,
                         "\t--------\t-----\t-----\t------\t--------\t----{}\n",
-                        if self.cfg.usafe {
-                            "\t----------"
-                        } else {
-                            ""
-                        }));
+                        if self.cfg.usafe { "\t----------" } else { "" }));
         cli_try!(write!(w,
                         "{}\t\t{}\t{}\t{}\t{}\t{}{}\n",
                         "Totals:",

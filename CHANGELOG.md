@@ -1,3 +1,22 @@
+<a name="v0.2.2"></a>
+### v0.2.2 (2016-09-06)
+
+
+#### Bug Fixes
+
+*   fix division by zero ([d6b2978b](https://github.com/kbknapp/cargo-count/commit/d6b2978b5135ba587e1eb6bc9005e4dcd3d45ec0))
+*   Batch results by language, not file extension ([1828538a](https://github.com/kbknapp/cargo-count/commit/1828538a9b30a8aec9fb059127d90721b4f9c29d), closes [#19](https://github.com/kbknapp/cargo-count/issues/19))
+
+#### Features
+
+* **languages:**  Add ASM, Shell, D and Nim ([350790c7](https://github.com/kbknapp/cargo-count/commit/350790c7f1e352fb21d7c274abcd30c10bb73a52))
+
+#### Improvements
+
+*   updates clap and uses new features ([4251fda2](https://github.com/kbknapp/cargo-count/commit/4251fda2473e6eda3630c777d0a674d7ee13449d))
+
+
+
 <a name="v0.2.1"></a>
 ### v0.2.1 (2015-12-24)
 
