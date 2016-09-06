@@ -238,6 +238,7 @@ fn main() {
                             current working directory when omitted)'")
             .arg(Arg::from_usage(
                     "-s, --separator [CHAR]   'Set the thousands separator for pretty printing'")
+		.use_delimiter(false)
                 .validator(single_char))
             .arg(Arg::from_usage("--utf8-rule [RULE]     'Sets the UTF-8 parsing rule'")
                 .default_value("strict")
