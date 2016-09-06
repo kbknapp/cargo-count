@@ -1,3 +1,12 @@
+<a name="v0.2.3"></a>
+### v0.2.3 (2016-09-06)
+
+
+#### Bug Fixes
+
+*   fixes the thousands separator option ([f255de98](https://github.com/kbknapp/cargo-count/commit/f255de986ba884d6055b29cff39975ed9819bf2f))
+
+
 <a name="v0.2.2"></a>
 ### v0.2.2 (2016-09-06)
 
