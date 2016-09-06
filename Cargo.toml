@@ -1,6 +1,6 @@
 [package]
 name = "cargo-count"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Kevin K <kbknapp@gmail.com>"]
 exclude = ["*.png"]
 description = "Cargo subcommand for displaying statistics about projects, such as code, comments, and unsafe counters"
@@ -13,7 +13,7 @@ keywords = ["cargo", "subcommand", "statistics", "count", "lines"]
 name = "cargo-count"
 
 [dependencies]
-clap = "~2.11.0"
+clap = "~2.11.2"
 glob = "~0.2"
 tabwriter = "~0.1"
 regex = "~0.1"

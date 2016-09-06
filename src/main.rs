@@ -247,7 +247,7 @@ When using '--exclude <PATH>' the path given can either be relative to the curre
 absolute. When '--exclude <PATH>' is a file or path, it must be relative to the current directory \
 or it will not be found. Example, if the current directory has a child directory named 'target' \
 with a child fild 'test.rs' and you use `--exclude target/test.rs'
-{n}{n}\
+\n\
 Globs are also supported. For example, to eclude 'test.rs' files from all child directories of \
 the current directory you could do '--exclude */test.rs'."))
         .get_matches();
