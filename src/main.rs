@@ -213,7 +213,7 @@ fn main() {
     debugln!("executing; cmd=cargo-count; args={:?}",
              env::args().collect::<Vec<_>>());
     let m = App::new("cargo-count")
-        .version(&*format!("v{}", crate_version!()))
+        .version(concat!("v", crate_version!()))
     // We have to lie about our binary name since this will be a third party
     // subcommand for cargo but we want usage strings to generated properly
         .bin_name("cargo")
