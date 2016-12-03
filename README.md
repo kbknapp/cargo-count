@@ -121,7 +121,7 @@ directory, or absolute. When '<path>' is a file, it must be relative to the curr
 directory or it will not be found. Example, if the current directory has a child 
 directory named 'target' with a child fild 'test.rs' and you use `--exclude target/test.rs' 
 
-Globs are also supported. For example, to eclude 'test.rs' files from all child directories 
+Globs are also supported. For example, to exclude 'test.rs' files from all child directories 
 of the current directory you could do '--exclude */test.rs'.
 ```
 
