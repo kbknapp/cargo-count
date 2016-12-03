@@ -154,7 +154,7 @@
 //! directory named 'target' with a child fild 'test.rs' and you use `--exclude
 //! target/test.rs'
 //!
-//! Globs are also supported. For example, to eclude 'test.rs' files from all
+//! Globs are also supported. For example, to exclude 'test.rs' files from all
 //! child directories
 //! of the current directory you could do '--exclude */test.rs'.
 //! ```
@@ -249,7 +249,7 @@ absolute. When '--exclude <PATH>' is a file or path, it must be relative to the 
 or it will not be found. Example, if the current directory has a child directory named 'target' \
 with a child fild 'test.rs' and you use `--exclude target/test.rs'
 \n\
-Globs are also supported. For example, to eclude 'test.rs' files from all child directories of \
+Globs are also supported. For example, to exclude 'test.rs' files from all child directories of \
 the current directory you could do '--exclude */test.rs'."))
         .get_matches();
 
