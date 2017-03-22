@@ -1,5 +1,3 @@
-
-
 use comment::Comment;
 use config::{Config, Utf8Rule};
 use count::Count;
@@ -17,8 +15,8 @@ use std::path::{Path, PathBuf};
 
 use tabwriter::TabWriter;
 
-pub struct Counts<'c> {
-    cfg: &'c Config<'c>,
+#[derive(Default, Debug)]
+pub struct Counter {
     counts: Vec<Count>,
     tot: usize,
     tot_lines: u64,
@@ -28,77 +26,8 @@ pub struct Counts<'c> {
     tot_usafe: u64,
 }
 
-impl<'c> Counts<'c> {
-    pub fn new(cfg: &'c Config) -> Self {
-        Counts {
-            cfg: cfg,
-            counts: vec![],
-            tot: 0,
-            tot_lines: 0,
-            tot_comments: 0,
-            tot_blanks: 0,
-            tot_code: 0,
-            tot_usafe: 0,
-        }
-    }
-
-    pub fn fill_from(&mut self) {
-        debugln!("executing; fill_from; cfg={:?}", self.cfg);
-        let cd;
-        let gitignore = if self.cfg.all {
-            None
-        } else {
-            cd = env::current_dir().unwrap().join(".gitignore");
-            gitignore::File::new(&cd).ok()
-        };
-        for path in &self.cfg.to_count {
-            debugln!("iter; path={:?};", path);
-            let mut files = vec![];
-            fsutil::get_all_files(&mut files,
-                                  path,
-                                  &self.cfg.exclude,
-                                  self.cfg.follow_links,
-                                  &gitignore);
-
-            for file in files {
-                debugln!("iter; file={:?};", file);
-                let extension = match Path::new(&file).extension() {
-                    Some(result) => {
-                        if let Some(ref exts) = self.cfg.exts {
-                            if !exts.contains(&result.to_str().unwrap_or("")) {
-                                continue;
-                            }
-                        }
-                        result.to_str().unwrap()
-                    }
-                    None => continue,
-                };
-
-                debugln!("found extension: {:?}", extension);
-                if let Some(pos_lang) = Language::from_ext(extension) {
-                    debugln!("Extension is valid");
-                    let mut found = false;
-                    debugln!("Searching for previous entries of that type");
-                    for l in self.counts.iter_mut() {
-                        if l.lang == pos_lang {
-                            debugln!("Found");
-                            found = true;
-                            l.add_file(PathBuf::from(&file));
-                            break;
-                        }
-                    }
-                    if !found {
-                        debugln!("Not found, creating new");
-                        let mut c = Count::new(pos_lang, self.cfg.thousands);
-                        c.add_file(PathBuf::from(&file));
-                        self.counts.push(c);
-                    }
-                } else {
-                    debugln!("extension wasn't valid");
-                }
-            }
-        }
-    }
+impl Countr {
+    pub fn new() -> Self { Counter::default() }
 
     #[cfg_attr(feature = "lints", allow(cyclomatic_complexity, trivial_regex))]
     pub fn count(&mut self) -> CliResult<()> {
@@ -113,7 +42,7 @@ impl<'c> Counts<'c> {
                 debugln!("iter; file={:?};", file);
                 let mut buffer = String::new();
 
-                let mut file_ref = cli_try!(File::open(&file));
+                let mut file_ref = File::open(&file)?;
 
                 match self.cfg.utf8_rule {
                     Utf8Rule::Ignore => {
@@ -123,11 +52,11 @@ impl<'c> Counts<'c> {
                     }
                     Utf8Rule::Lossy => {
                         let mut vec_buf = vec![];
-                        cli_try!(file_ref.read_to_end(&mut vec_buf));
+                        file_ref.read_to_end(&mut vec_buf)?;
                         buffer = String::from_utf8_lossy(&vec_buf).into_owned();
                     }
                     Utf8Rule::Strict => {
-                        cli_try!(file_ref.read_to_string(&mut buffer));
+                        file_ref.read_to_string(&mut buffer)?;
                     }
                 }
                 let mut is_in_comments = false;
@@ -203,7 +132,7 @@ impl<'c> Counts<'c> {
                                 debugln!("It didn't contain the keyword, but we are still in \
                                           unsafe");
                                 count.usafe += 1;
-                                bracket_count = Counts::count_brackets(line, Some(bracket_count));
+                                bracket_count = Counter::count_brackets(line, Some(bracket_count));
                                 is_in_unsafe = bracket_count > 0;
                                 debugln!("after counting brackets; is_in_unsafe={:?}; \
                                           bracket_count={:?}",
@@ -232,7 +161,7 @@ impl<'c> Counts<'c> {
                                     count.usafe += 1;
                                     if let Some(after) = caps.at(3) {
                                         debugln!("after_usafe={:?}", after);
-                                        bracket_count = Counts::count_brackets(after, None);
+                                        bracket_count = Counter::count_brackets(after, None);
                                         is_in_unsafe = bracket_count > 0;
                                         debugln!("after counting brackets; is_in_unsafe={:?}; \
                                                   bracket_count={:?}",
@@ -269,56 +198,56 @@ impl<'c> Counts<'c> {
 
     pub fn write_results(&mut self) -> CliResult<()> {
         let mut w = TabWriter::new(vec![]);
-        cli_try!(write!(w,
-                        "\tLanguage\tFiles\tLines\tBlanks\tComments\tCode{}\n",
-                        if self.cfg.usafe { "\tUnsafe (%)" } else { "" }));
-        cli_try!(write!(w,
-                        "\t--------\t-----\t-----\t------\t--------\t----{}\n",
-                        if self.cfg.usafe { "\t----------" } else { "" }));
-        for count in &self.counts {
+        write!(w,
+               "\tLanguage\tFiles\tLines\tBlanks\tComments\tCode{}\n",
+               if self.cfg.usafe { "\tUnsafe (%)" } else { "" })?;
+        write!(w,
+               "\t--------\t-----\t-----\t------\t--------\t----{}\n",
+               if self.cfg.usafe { "\t----------" } else { "" })?;
+        for count in &self.Counter {
             if self.cfg.usafe {
                 let usafe_per = if count.code != 0 {
                     (count.usafe as f64 / count.code as f64) * 100.00f64
                 } else {
                     0f64
                 };
-                cli_try!(write!(w,
-                                "\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
-                                count.lang.name(),
-                                count.total_files(),
-                                count.lines(),
-                                count.blanks(),
-                                count.comments(),
-                                count.code(),
-                                if (usafe_per - 00f64).abs() < f64::EPSILON {
-                                    "".to_owned()
-                                } else {
-                                    format!("{} ({:.2}%)", count.usafe(), usafe_per)
-                                }));
+                write!(w,
+                       "\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+                       count.lang.name(),
+                       count.total_files(),
+                       count.lines(),
+                       count.blanks(),
+                       count.comments(),
+                       count.code(),
+                       if (usafe_per - 00f64).abs() < f64::EPSILON {
+                           "".to_owned()
+                       } else {
+                           format!("{} ({:.2}%)", count.usafe(), usafe_per)
+                       })?;
             } else {
-                cli_try!(write!(w, "\t{}\n", count));
+                write!(w, "\t{}\n", count)?;
             }
         }
-        cli_try!(write!(w,
-                        "\t--------\t-----\t-----\t------\t--------\t----{}\n",
-                        if self.cfg.usafe { "\t----------" } else { "" }));
-        cli_try!(write!(w,
-                        "{}\t\t{}\t{}\t{}\t{}\t{}{}\n",
-                        "Totals:",
-                        fmt::format_number(self.tot as u64, self.cfg.thousands),
-                        fmt::format_number(self.tot_lines, self.cfg.thousands),
-                        fmt::format_number(self.tot_blanks, self.cfg.thousands),
-                        fmt::format_number(self.tot_comments, self.cfg.thousands),
-                        fmt::format_number(self.tot_code, self.cfg.thousands),
-                        if self.cfg.usafe {
-                            format!("\t{} ({:.2}%)",
-                                    fmt::format_number(self.tot_usafe, self.cfg.thousands),
-                                    (self.tot_usafe as f64 / self.tot_code as f64) * 100.00f64)
-                        } else {
-                            "".to_owned()
-                        }));
+        write!(w,
+               "\t--------\t-----\t-----\t------\t--------\t----{}\n",
+               if self.cfg.usafe { "\t----------" } else { "" })?;
+        write!(w,
+               "{}\t\t{}\t{}\t{}\t{}\t{}{}\n",
+               "Totals:",
+               fmt::format_number(self.tot as u64, self.cfg.thousands),
+               fmt::format_number(self.tot_lines, self.cfg.thousands),
+               fmt::format_number(self.tot_blanks, self.cfg.thousands),
+               fmt::format_number(self.tot_comments, self.cfg.thousands),
+               fmt::format_number(self.tot_code, self.cfg.thousands),
+               if self.cfg.usafe {
+                   format!("\t{} ({:.2}%)",
+                           fmt::format_number(self.tot_usafe, self.cfg.thousands),
+                           (self.tot_usafe as f64 / self.tot_code as f64) * 100.00f64)
+               } else {
+                   "".to_owned()
+               })?;
 
-        cli_try!(w.flush());
+        w.flush()?;
 
         verboseln!(self.cfg,
                    "{} {}",
@@ -328,7 +257,7 @@ impl<'c> Counts<'c> {
             write!(io::stdout(),
                    "{}",
                    String::from_utf8(w.unwrap()).ok().expect("failed to get valid UTF-8 String"))
-                .expect("failed to write output");
+                    .expect("failed to write output");
         } else {
             println!("\n\tNo source files were found matching the specified criteria");
         }
@@ -347,3 +276,61 @@ impl<'c> Counts<'c> {
         b
     }
 }
+
+// impl<'a> From<&'a Config> for Counter {
+//     fn from(c: &'a Config) -> Self {
+//         let mut cnts = Counter::new();
+//         debugln!("executing; Counter::from; cfg={:?}", cfg);
+//         let cd;
+//         let gitignore = if c.all {
+//             None
+//         } else {
+//             cd = env::current_dir().unwrap().join(".gitignore");
+//             gitignore::File::new(&cd).ok()
+//         };
+//         for path in &c.to_count {
+//             debugln!("iter; path={:?};", path);
+//             let mut files = vec![];
+//             fsutil::get_all_files(&mut files, path, &c.exclude, c.follow_links, &gitignore);
+
+//             for file in files {
+//                 debugln!("iter; file={:?};", file);
+//                 let extension = match Path::new(&file).extension() {
+//                     Some(result) => {
+//                         if let Some(ref exts) = c.exts {
+//                             if !exts.contains(result.to_str().unwrap_or("")) {
+//                                 continue;
+//                             }
+//                         }
+//                         result.to_str().unwrap()
+//                     }
+//                     None => continue,
+//                 };
+
+//                 debugln!("found extension: {:?}", extension);
+//                 if let Some(pos_lang) = Language::from_ext(extension) {
+//                     debugln!("Extension is valid");
+//                     let mut found = false;
+//                     debugln!("Searching for previous entries of that type");
+//                     for l in cnts.Counter.iter_mut() {
+//                         if l.lang == pos_lang {
+//                             debugln!("Found");
+//                             found = true;
+//                             l.add_file(PathBuf::from(&file));
+//                             break;
+//                         }
+//                     }
+//                     if !found {
+//                         debugln!("Not found, creating new");
+//                         let mut c = Count::new(pos_lang, c.thousands);
+//                         c.add_file(PathBuf::from(&file));
+//                         cnts.Counter.push(c);
+//                     }
+//                 } else {
+//                     debugln!("extension wasn't valid");
+//                 }
+//             }
+//         }
+//         cnts
+//     }
+// }

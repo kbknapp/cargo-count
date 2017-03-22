@@ -189,16 +189,16 @@ extern crate gitignore;
 
 #[cfg(feature = "debug")]
 use std::env;
-
-use clap::{App, AppSettings, Arg, SubCommand};
+use std::io;
 
 use config::Config;
-use count::Counts;
+use count::Counter;
 use error::{CliError, CliResult};
 use fmt::Format;
 
 #[macro_use]
 mod macros;
+mod cli;
 mod comment;
 mod config;
 mod count;
@@ -212,51 +212,11 @@ static UTF8_RULES: [&'static str; 3] = ["strict", "lossy", "ignore"];
 fn main() {
     debugln!("executing; cmd=cargo-count; args={:?}",
              env::args().collect::<Vec<_>>());
-    let m = App::new("cargo-count")
-        .version(concat!("v", crate_version!()))
-    // We have to lie about our binary name since this will be a third party
-    // subcommand for cargo but we want usage strings to generated properly
-        .bin_name("cargo")
-    // Global version uses the version we supplied (Cargo.toml) for all subcommands
-    // as well
-        .settings(&[AppSettings::GlobalVersion,
-                    AppSettings::SubcommandRequired])
-    // We use a subcommand because everything parsed after `cargo` is sent to the
-    // third party
-    // plugin which will then be interpreted as a subcommand/positional arg by clap
-        .subcommand(SubCommand::with_name("count")
-            .author("Kevin K. <kbknapp@gmail.com>")
-            .about("Displays line counts of code for cargo projects")
-            .args_from_usage("
--e, --exclude [PATH]...    'Files or directories to exclude (automatically includes \'.git\')'
--a, --all                  'Do not ignore .gitignore'd paths'
---unsafe-statistics        'Displays lines and percentages of \"unsafe\" code'
--l, --language [EXT]...    'Only count these languges (i.e. \'-l js py cpp\')'
--v, --verbose              'Print verbose output'
--S, --follow-symlinks      'Follows symlinks and counts source files it finds [default: false]'
-[PATH]...                  'The files or directories (including children) to count (defaults to \
-                            current working directory when omitted)'")
-            .arg(Arg::from_usage(
-                    "-s, --separator [CHAR]   'Set the thousands separator for pretty printing'")
-		.use_delimiter(false)
-                .validator(single_char))
-            .arg(Arg::from_usage("--utf8-rule [RULE]     'Sets the UTF-8 parsing rule'")
-                .default_value("strict")
-                .possible_values(&UTF8_RULES))
-            .after_help("\
-When using '--exclude <PATH>' the path given can either be relative to the current directory, or \
-absolute. When '--exclude <PATH>' is a file or path, it must be relative to the current directory \
-or it will not be found. Example, if the current directory has a child directory named 'target' \
-with a child fild 'test.rs' and you use `--exclude target/test.rs'
-\n\
-Globs are also supported. For example, to exclude 'test.rs' files from all child directories of \
-the current directory you could do '--exclude */test.rs'."))
-        .get_matches();
+    let m = cli::build_cli().get_matches();
 
     if let Some(m) = m.subcommand_matches("count") {
-        let cfg = Config::from_matches(m).unwrap_or_else(|e| e.exit());
         println!("Gathering information...");
-        if let Err(e) = execute(cfg) {
+        if let Err(e) = Config::from_matches(m).and_then(execute) {
             e.exit();
         }
     }
@@ -279,21 +239,114 @@ fn execute(cfg: Config) -> CliResult<()> {
              });
 
     debugln!("Checking for files or dirs to count from cli");
+    let threads = cfg.threads();
+    if threads == 1 || cfg.is_one_path() {
+        run_one_thread(cfg)
+    } else {
+        run_parallel(cfg)
+    }
 
-    let mut counts = Counts::new(&cfg);
-    counts.fill_from();
-    cli_try!(counts.count());
-    cli_try!(counts.write_results());
+    let mut counter = Counter::new();
+    counter.count(&cfg)?;
+    counter.write_results(&cfg)?;
     Ok(())
 }
 
-fn single_char(s: String) -> Result<(), String> {
-    if s.len() == 1 {
-        Ok(())
-    } else {
-        Err(
-          format!(
-            "the --separator argument option only accepts a single character but found '{}'",
-             Format::Warning(s)))
+fn run_one_thread(c: Arc<Config>) -> Result<u64> {
+    let stdout = io::stdout();
+    let mut stdout = stdout.lock();
+    let mut worker = c.worker();
+    let mut paths_searched: u64 = 0;
+    let mut match_count = 0;
+    for result in args.walker() {
+        let dent = match get_or_log_dir_entry(
+            result,
+            args.stdout_handle(),
+            args.no_messages(),
+        ) {
+            None => continue,
+            Some(dent) => dent,
+        };
+        let mut printer = args.printer(&mut stdout);
+        if match_count > 0 {
+            if args.quiet() {
+                break;
+            }
+            if let Some(sep) = args.file_separator() {
+                printer = printer.file_separator(sep);
+            }
+        }
+        paths_searched += 1;
+        match_count +=
+            if dent.is_stdin() {
+                worker.run(&mut printer, Work::Stdin)
+            } else {
+                worker.run(&mut printer, Work::DirEntry(dent))
+            };
     }
+    if !args.paths().is_empty() && paths_searched == 0 {
+        if !args.no_messages() {
+            eprint_nothing_searched();
+        }
+    }
+    Ok(match_count)
+}
+
+fn run_parallel(args: Arc<Args>) -> Result<u64> {
+    let bufwtr = Arc::new(args.buffer_writer());
+    let quiet_matched = args.quiet_matched();
+    let paths_searched = Arc::new(AtomicUsize::new(0));
+    let match_count = Arc::new(AtomicUsize::new(0));
+
+    args.walker_parallel().run(|| {
+        let args = args.clone();
+        let quiet_matched = quiet_matched.clone();
+        let paths_searched = paths_searched.clone();
+        let match_count = match_count.clone();
+        let bufwtr = bufwtr.clone();
+        let mut buf = bufwtr.buffer();
+        let mut worker = args.worker();
+        Box::new(move |result| {
+            use ignore::WalkState::*;
+
+            if quiet_matched.has_match() {
+                return Quit;
+            }
+            let dent = match get_or_log_dir_entry(
+                result,
+                args.stdout_handle(),
+                args.no_messages(),
+            ) {
+                None => return Continue,
+                Some(dent) => dent,
+            };
+            paths_searched.fetch_add(1, Ordering::SeqCst);
+            buf.clear();
+            {
+                // This block actually executes the search and prints the
+                // results into outbuf.
+                let mut printer = args.printer(&mut buf);
+                let count =
+                    if dent.is_stdin() {
+                        worker.run(&mut printer, Work::Stdin)
+                    } else {
+                        worker.run(&mut printer, Work::DirEntry(dent))
+                    };
+                match_count.fetch_add(count as usize, Ordering::SeqCst);
+                if quiet_matched.set_match(count > 0) {
+                    return Quit;
+                }
+            }
+            // BUG(burntsushi): We should handle this error instead of ignoring
+            // it. See: https://github.com/BurntSushi/ripgrep/issues/200
+            let _ = bufwtr.print(&buf);
+            Continue
+        })
+    });
+    if !args.paths().is_empty() && paths_searched.load(Ordering::SeqCst) == 0 {
+        if !args.no_messages() {
+            eprint_nothing_searched();
+        }
+    }
+    Ok(match_count.load(Ordering::SeqCst) as u64)
 }

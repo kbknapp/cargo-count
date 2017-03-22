@@ -1,12 +1,3 @@
-macro_rules! cli_try {
-    ($t:expr) => ({
-        use ::std::error::Error;
-        match $t {
-            Ok(o) => o,
-            Err(e) => return Err(CliError::Generic(e.description().to_owned()))
-        }
-    })
-}
 macro_rules! wlnerr(
     ($($arg:tt)*) => ({
         use std::io::{Write, stderr};
@@ -41,14 +32,14 @@ macro_rules! verboseln(
 
 #[cfg(feature = "debug")]
 macro_rules! debugln {
-    ($fmt:expr) => (println!(concat!("*DEBUG:cargo-count: ", $fmt)));
-    ($fmt:expr, $($arg:tt)*) => (println!(concat!("*DEBUG:cargo-count: ",$fmt), $($arg)*));
+    ($fmt:expr) => (println!(concat!("DEBUG:cargo-count: ", $fmt)));
+    ($fmt:expr, $($arg:tt)*) => (println!(concat!("DEBUG:cargo-count: ",$fmt), $($arg)*));
 }
 
 #[cfg(feature = "debug")]
 macro_rules! debug {
-    ($fmt:expr) => (print!(concat!("*DEBUG:cargo-count: ", $fmt)));
-    ($fmt:expr, $($arg:tt)*) => (println!(concat!("*DEBUG:cargo-count: ",$fmt), $($arg)*));
+    ($fmt:expr) => (print!(concat!("DEBUG:cargo-count: ", $fmt)));
+    ($fmt:expr, $($arg:tt)*) => (println!(concat!("DEBUG:cargo-count: ",$fmt), $($arg)*));
 }
 
 #[cfg(not(feature = "debug"))]
