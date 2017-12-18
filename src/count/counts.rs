@@ -105,7 +105,7 @@ impl<'c> Counts<'c> {
         for count in self.counts.iter_mut() {
             debugln!("iter; count={:?};", count);
             let re = if let Some(kw) = count.lang.unsafe_keyword() {
-                Regex::new(&*format!("(.*?)([:^word:]{}[:^word:])(.*)", kw)).unwrap()
+                Regex::new(&*format!("(.*)(\\b{}\\b)(.*)", kw)).unwrap()
             } else {
                 Regex::new("").unwrap()
             };
