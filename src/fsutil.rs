@@ -10,10 +10,9 @@ pub fn get_all_files(v: &mut Vec<PathBuf>,
                      exclude: &[PathBuf],
                      follow_links: bool,
                      gitignore: &Option<File>) {
-    debugln!("executing; get_all_files; path={:?}; exclude={:?}; all={:?}",
+    debugln!("executing; get_all_files; path={:?}; exclude={:?}",
              path,
-             exclude,
-             all);
+             exclude);
     if exclude.contains(path) {
         return;
     }
