@@ -1,11 +1,11 @@
 macro_rules! cli_try {
-    ($t:expr) => ({
-        use ::std::error::Error;
+    ($t:expr) => {{
+        use std::error::Error;
         match $t {
             Ok(o) => o,
-            Err(e) => return Err(CliError::Generic(e.description().to_owned()))
+            Err(e) => return Err(CliError::Generic(e.description().to_owned())),
         }
-    })
+    }};
 }
 macro_rules! wlnerr(
     ($($arg:tt)*) => ({
@@ -53,12 +53,12 @@ macro_rules! debug {
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debugln {
-    ($fmt:expr) => ();
-    ($fmt:expr, $($arg:tt)*) => ();
+    ($fmt:expr) => {};
+    ($fmt:expr, $($arg:tt)*) => {};
 }
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debug {
-    ($fmt:expr) => ();
-    ($fmt:expr, $($arg:tt)*) => ();
+    ($fmt:expr) => {};
+    ($fmt:expr, $($arg:tt)*) => {};
 }

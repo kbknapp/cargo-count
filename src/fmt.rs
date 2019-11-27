@@ -1,9 +1,9 @@
-
 #[cfg(all(feature = "color", not(target_os = "windows")))]
 use ansi_term::ANSIString;
 
 #[cfg(all(feature = "color", not(target_os = "windows")))]
-use ansi_term::Colour::{Green, Red, Yellow};use std::fmt;
+use ansi_term::Colour::{Green, Red, Yellow};
+use std::fmt;
 
 #[allow(dead_code)]
 pub enum Format<T> {

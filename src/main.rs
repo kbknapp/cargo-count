@@ -169,23 +169,29 @@
 #![cfg_attr(feature = "lints", allow(should_implement_trait))]
 #![cfg_attr(feature = "lints", allow(unstable_features))]
 #![cfg_attr(feature = "lints", deny(warnings))]
-#![cfg_attr(not(any(feature = "nightly", feature = "unstable")), deny(unstable_features))]
-#![deny(missing_docs,
-        missing_debug_implementations,
-        missing_copy_implementations,
-        trivial_casts, trivial_numeric_casts,
-        unsafe_code,
-        unused_import_braces,
-        unused_qualifications)]
+#![cfg_attr(
+    not(any(feature = "nightly", feature = "unstable")),
+    deny(unstable_features)
+)]
+#![deny(
+    missing_docs,
+    missing_debug_implementations,
+    missing_copy_implementations,
+    trivial_casts,
+    trivial_numeric_casts,
+    unsafe_code,
+    unused_import_braces,
+    unused_qualifications
+)]
 
 #[macro_use]
 extern crate clap;
 #[cfg(feature = "color")]
 extern crate ansi_term;
-extern crate tabwriter;
+extern crate gitignore;
 extern crate glob;
 extern crate regex;
-extern crate gitignore;
+extern crate tabwriter;
 
 #[cfg(feature = "debug")]
 use std::env;
@@ -210,8 +216,10 @@ mod language;
 static UTF8_RULES: [&'static str; 3] = ["strict", "lossy", "ignore"];
 
 fn main() {
-    debugln!("executing; cmd=cargo-count; args={:?}",
-             env::args().collect::<Vec<_>>());
+    debugln!(
+        "executing; cmd=cargo-count; args={:?}",
+        env::args().collect::<Vec<_>>()
+    );
     let m = App::new("cargo-count")
         .version(concat!("v", crate_version!()))
     // We have to lie about our binary name since this will be a third party
@@ -265,18 +273,19 @@ the current directory you could do '--exclude */test.rs'."))
 fn execute(cfg: Config) -> CliResult<()> {
     debugln!("executing; cmd=execute;");
     verboseln!(cfg, "{}: {:?}", Format::Warning("Excluding"), cfg.exclude);
-    verbose!(cfg,
-             "{}",
-             if cfg.exts.is_some() {
-                 format!("{} including files with extension: {}\n",
-                         Format::Warning("Only"),
-                         cfg.exts
-                            .as_ref()
-                            .unwrap()
-                            .join(", "))
-             } else {
-                 "".to_owned()
-             });
+    verbose!(
+        cfg,
+        "{}",
+        if cfg.exts.is_some() {
+            format!(
+                "{} including files with extension: {}\n",
+                Format::Warning("Only"),
+                cfg.exts.as_ref().unwrap().join(", ")
+            )
+        } else {
+            "".to_owned()
+        }
+    );
 
     debugln!("Checking for files or dirs to count from cli");
 
@@ -291,9 +300,9 @@ fn single_char(s: String) -> Result<(), String> {
     if s.len() == 1 {
         Ok(())
     } else {
-        Err(
-          format!(
+        Err(format!(
             "the --separator argument option only accepts a single character but found '{}'",
-             Format::Warning(s)))
+            Format::Warning(s)
+        ))
     }
 }
