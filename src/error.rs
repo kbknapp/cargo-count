@@ -1,8 +1,7 @@
-
-
-use fmt::Format;use std::error::Error;
-use std::fmt::{Display, Formatter};
+use fmt::Format;
+use std::error::Error;
 use std::fmt::Result as FmtResult;
+use std::fmt::{Display, Formatter};
 
 pub type CliResult<T> = Result<T, CliError>;
 
@@ -51,7 +50,9 @@ impl Error for CliError {
         match *self {
             CliError::Generic(ref d) => &*d,
             CliError::UnknownExt(ref d) => &*d,
-            CliError::Unknown => "An unknown fatal error has occurred, please consider filing a bug-report!",
+            CliError::Unknown => {
+                "An unknown fatal error has occurred, please consider filing a bug-report!"
+            }
         }
     }
 
