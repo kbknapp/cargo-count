@@ -4,7 +4,7 @@
 
 Linux: [![Build Status](https://travis-ci.org/kbknapp/cargo-count.svg?branch=master)](https://travis-ci.org/kbknapp/cargo-count)
 
-A cargo subcommand for displaying line counts of source code in projects, including a niave `unsafe` counter for Rust source files. This subcommand was originally based off and inspired by the project [tokei](https://github.com/aaronepower/tokei) by [Aaronepower](https://github.com/aaronepower)
+A cargo subcommand for displaying line counts of source code in projects, including a naive `unsafe` counter for Rust source files. This subcommand was originally based off and inspired by the project [tokei](https://github.com/aaronepower/tokei) by [Aaronepower](https://github.com/aaronepower)
 
 ## Demo
 
