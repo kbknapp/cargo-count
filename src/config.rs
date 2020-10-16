@@ -1,5 +1,3 @@
-
-
 use clap::ArgMatches;
 
 use error::{CliError, CliResult};
@@ -34,9 +32,11 @@ impl<'a> Config<'a> {
         if let Some(ext_vec) = m.values_of("language") {
             for e in ext_vec {
                 if let None = Language::from_ext(e) {
-                    return Err(CliError::UnknownExt(format!("unsupported source code extension \
+                    return Err(CliError::UnknownExt(format!(
+                        "unsupported source code extension \
                                                              '{}'",
-                                                            e.to_owned())));
+                        e.to_owned()
+                    )));
                 }
             }
         }

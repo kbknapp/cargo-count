@@ -1,9 +1,8 @@
 mod counts;
 
-
+pub use self::counts::Counts;
 use fmt;
 use language::Language;
-pub use self::counts::Counts;
 
 use std::fmt as StdFmt;
 use std::ops::Deref;
@@ -73,13 +72,15 @@ impl Deref for Count {
 
 impl StdFmt::Display for Count {
     fn fmt(&self, f: &mut StdFmt::Formatter) -> StdFmt::Result {
-        write!(f,
-               "{}\t{}\t{}\t{}\t{}\t{}",
-               self.lang,
-               self.total_files(),
-               self.lines(),
-               self.blanks(),
-               self.comments(),
-               self.code())
+        write!(
+            f,
+            "{}\t{}\t{}\t{}\t{}\t{}",
+            self.lang,
+            self.total_files(),
+            self.lines(),
+            self.blanks(),
+            self.comments(),
+            self.code()
+        )
     }
 }
