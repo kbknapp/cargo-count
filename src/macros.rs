@@ -1,11 +1,10 @@
 macro_rules! cli_try {
-    ($t:expr) => ({
-        use ::std::error::Error;
+    ($t:expr) => {{
         match $t {
             Ok(o) => o,
-            Err(e) => return Err(CliError::Generic(e.description().to_owned()))
+            Err(e) => return Err(CliError::Generic(e.to_string().to_owned())),
         }
-    })
+    }};
 }
 macro_rules! wlnerr(
     ($($arg:tt)*) => ({
@@ -14,6 +13,7 @@ macro_rules! wlnerr(
     })
 );
 
+#[allow(unused_macros)]
 macro_rules! werr(
     ($($arg:tt)*) => ({
         use std::io::{Write, stderr};
@@ -53,12 +53,13 @@ macro_rules! debug {
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debugln {
-    ($fmt:expr) => ();
-    ($fmt:expr, $($arg:tt)*) => ();
+    ($fmt:expr) => {};
+    ($fmt:expr, $($arg:tt)*) => {};
 }
 
+#[allow(unused_macros)]
 #[cfg(not(feature = "debug"))]
 macro_rules! debug {
-    ($fmt:expr) => ();
-    ($fmt:expr, $($arg:tt)*) => ();
+    ($fmt:expr) => {};
+    ($fmt:expr, $($arg:tt)*) => {};
 }

@@ -1,5 +1,3 @@
-
-
 use comment::Comment;
 use config::{Config, Utf8Rule};
 use count::Count;
@@ -54,11 +52,13 @@ impl<'c> Counts<'c> {
         for path in &self.cfg.to_count {
             debugln!("iter; path={:?};", path);
             let mut files = vec![];
-            fsutil::get_all_files(&mut files,
-                                  path,
-                                  &self.cfg.exclude,
-                                  self.cfg.follow_links,
-                                  &gitignore);
+            fsutil::get_all_files(
+                &mut files,
+                path,
+                &self.cfg.exclude,
+                self.cfg.follow_links,
+                &gitignore,
+            );
 
             for file in files {
                 debugln!("iter; file={:?};", file);
@@ -200,15 +200,19 @@ impl<'c> Counts<'c> {
                             debugln!("There is a keyword");
                             debugln!("line={:?}", line);
                             if is_in_unsafe {
-                                debugln!("It didn't contain the keyword, but we are still in \
-                                          unsafe");
+                                debugln!(
+                                    "It didn't contain the keyword, but we are still in \
+                                          unsafe"
+                                );
                                 count.usafe += 1;
                                 bracket_count = Counts::count_brackets(line, Some(bracket_count));
                                 is_in_unsafe = bracket_count > 0;
-                                debugln!("after counting brackets; is_in_unsafe={:?}; \
+                                debugln!(
+                                    "after counting brackets; is_in_unsafe={:?}; \
                                           bracket_count={:?}",
-                                         is_in_unsafe,
-                                         bracket_count);
+                                    is_in_unsafe,
+                                    bracket_count
+                                );
                             } else if let Some(caps) = re.captures(line) {
                                 let mut should_count = true;
                                 if let Some(before) = caps.at(1) {
@@ -221,8 +225,9 @@ impl<'c> Counts<'c> {
                                         }
                                     }
                                     if let Some(multi) = count.lang.multi_start() {
-                                        if before.contains(multi) &&
-                                           !before.contains(count.lang.multi_end().unwrap()) {
+                                        if before.contains(multi)
+                                            && !before.contains(count.lang.multi_end().unwrap())
+                                        {
                                             should_count = false;
                                         }
                                     }
@@ -234,10 +239,12 @@ impl<'c> Counts<'c> {
                                         debugln!("after_usafe={:?}", after);
                                         bracket_count = Counts::count_brackets(after, None);
                                         is_in_unsafe = bracket_count > 0;
-                                        debugln!("after counting brackets; is_in_unsafe={:?}; \
+                                        debugln!(
+                                            "after counting brackets; is_in_unsafe={:?}; \
                                                   bracket_count={:?}",
-                                                 is_in_unsafe,
-                                                 bracket_count);
+                                            is_in_unsafe,
+                                            bracket_count
+                                        );
                                     }
                                 }
                             } else {
@@ -269,12 +276,16 @@ impl<'c> Counts<'c> {
 
     pub fn write_results(&mut self) -> CliResult<()> {
         let mut w = TabWriter::new(vec![]);
-        cli_try!(write!(w,
-                        "\tLanguage\tFiles\tLines\tBlanks\tComments\tCode{}\n",
-                        if self.cfg.usafe { "\tUnsafe (%)" } else { "" }));
-        cli_try!(write!(w,
-                        "\t--------\t-----\t-----\t------\t--------\t----{}\n",
-                        if self.cfg.usafe { "\t----------" } else { "" }));
+        cli_try!(write!(
+            w,
+            "\tLanguage\tFiles\tLines\tBlanks\tComments\tCode{}\n",
+            if self.cfg.usafe { "\tUnsafe (%)" } else { "" }
+        ));
+        cli_try!(write!(
+            w,
+            "\t--------\t-----\t-----\t------\t--------\t----{}\n",
+            if self.cfg.usafe { "\t----------" } else { "" }
+        ));
         for count in &self.counts {
             if self.cfg.usafe {
                 let usafe_per = if count.code != 0 {
@@ -282,53 +293,67 @@ impl<'c> Counts<'c> {
                 } else {
                     0f64
                 };
-                cli_try!(write!(w,
-                                "\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
-                                count.lang.name(),
-                                count.total_files(),
-                                count.lines(),
-                                count.blanks(),
-                                count.comments(),
-                                count.code(),
-                                if (usafe_per - 00f64).abs() < f64::EPSILON {
-                                    "".to_owned()
-                                } else {
-                                    format!("{} ({:.2}%)", count.usafe(), usafe_per)
-                                }));
+                cli_try!(write!(
+                    w,
+                    "\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+                    count.lang.name(),
+                    count.total_files(),
+                    count.lines(),
+                    count.blanks(),
+                    count.comments(),
+                    count.code(),
+                    if (usafe_per - 00f64).abs() < f64::EPSILON {
+                        "".to_owned()
+                    } else {
+                        format!("{} ({:.2}%)", count.usafe(), usafe_per)
+                    }
+                ));
             } else {
                 cli_try!(write!(w, "\t{}\n", count));
             }
         }
-        cli_try!(write!(w,
-                        "\t--------\t-----\t-----\t------\t--------\t----{}\n",
-                        if self.cfg.usafe { "\t----------" } else { "" }));
-        cli_try!(write!(w,
-                        "{}\t\t{}\t{}\t{}\t{}\t{}{}\n",
-                        "Totals:",
-                        fmt::format_number(self.tot as u64, self.cfg.thousands),
-                        fmt::format_number(self.tot_lines, self.cfg.thousands),
-                        fmt::format_number(self.tot_blanks, self.cfg.thousands),
-                        fmt::format_number(self.tot_comments, self.cfg.thousands),
-                        fmt::format_number(self.tot_code, self.cfg.thousands),
-                        if self.cfg.usafe {
-                            format!("\t{} ({:.2}%)",
-                                    fmt::format_number(self.tot_usafe, self.cfg.thousands),
-                                    (self.tot_usafe as f64 / self.tot_code as f64) * 100.00f64)
-                        } else {
-                            "".to_owned()
-                        }));
+        cli_try!(write!(
+            w,
+            "\t--------\t-----\t-----\t------\t--------\t----{}\n",
+            if self.cfg.usafe { "\t----------" } else { "" }
+        ));
+        cli_try!(write!(
+            w,
+            "{}\t\t{}\t{}\t{}\t{}\t{}{}\n",
+            "Totals:",
+            fmt::format_number(self.tot as u64, self.cfg.thousands),
+            fmt::format_number(self.tot_lines, self.cfg.thousands),
+            fmt::format_number(self.tot_blanks, self.cfg.thousands),
+            fmt::format_number(self.tot_comments, self.cfg.thousands),
+            fmt::format_number(self.tot_code, self.cfg.thousands),
+            if self.cfg.usafe {
+                format!(
+                    "\t{} ({:.2}%)",
+                    fmt::format_number(self.tot_usafe, self.cfg.thousands),
+                    (self.tot_usafe as f64 / self.tot_code as f64) * 100.00f64
+                )
+            } else {
+                "".to_owned()
+            }
+        ));
 
         cli_try!(w.flush());
 
-        verboseln!(self.cfg,
-                   "{} {}",
-                   Format::Good("Displaying"),
-                   "the results:");
+        verboseln!(
+            self.cfg,
+            "{} {}",
+            Format::Good("Displaying"),
+            "the results:"
+        );
         if self.tot > 0 {
-            write!(io::stdout(),
-                   "{}",
-                   String::from_utf8(w.unwrap()).ok().expect("failed to get valid UTF-8 String"))
-                .expect("failed to write output");
+            write!(
+                io::stdout(),
+                "{}",
+                String::from_utf8(w.unwrap())
+                    .ok()
+                    .expect("failed to get valid UTF-8 String")
+            )
+            .expect("failed to write output");
         } else {
             println!("\n\tNo source files were found matching the specified criteria");
         }

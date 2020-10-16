@@ -1,8 +1,7 @@
-
-
-use fmt::Format;use std::error::Error;
-use std::fmt::{Display, Formatter};
+use fmt::Format;
+use std::error::Error;
 use std::fmt::Result as FmtResult;
+use std::fmt::{Display, Formatter};
 
 pub type CliResult<T> = Result<T, CliError>;
 
@@ -41,7 +40,7 @@ impl CliError {
 
 impl Display for CliError {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
-        write!(f, "{} {}", Format::Error("error:"), self.description())
+        write!(f, "{} {}", Format::Error("error:"), self.to_string())
     }
 }
 
@@ -51,11 +50,13 @@ impl Error for CliError {
         match *self {
             CliError::Generic(ref d) => &*d,
             CliError::UnknownExt(ref d) => &*d,
-            CliError::Unknown => "An unknown fatal error has occurred, please consider filing a bug-report!",
+            CliError::Unknown => {
+                "An unknown fatal error has occurred, please consider filing a bug-report!"
+            }
         }
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         None
     }
 }

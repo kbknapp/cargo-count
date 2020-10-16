@@ -1,5 +1,3 @@
-
-
 use comment::Comment;
 use std::fmt as StdFmt;
 
@@ -47,8 +45,8 @@ impl Language {
             "pl" => Some(Language::Perl),
             "go" => Some(Language::Go),
             "agc" | "asm" | "a51" | "inc" | "nasm" | "s" | "ms" => Some(Language::Assembly),
-            "ps1" | "psd1" | "psm1" | "sh" | "bash" | "bats" | "cgi" | "command" | "fcgi" |
-            "ksh" | "sh.in" | "tmux" | "tool" | "zsh" | "tcsh" | "csh" | "fish" => {
+            "ps1" | "psd1" | "psm1" | "sh" | "bash" | "bats" | "cgi" | "command" | "fcgi"
+            | "ksh" | "sh.in" | "tmux" | "tool" | "zsh" | "tcsh" | "csh" | "fish" => {
                 Some(Language::Shell)
             }
             "d" | "di" => Some(Language::D),
@@ -84,8 +82,13 @@ impl Language {
 
     pub fn is_unsafe(&self) -> bool {
         match *self {
-            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Rust |
-            Language::Assembly | Language::Nim => true,
+            Language::C
+            | Language::Cpp
+            | Language::Hpp
+            | Language::Header
+            | Language::Rust
+            | Language::Assembly
+            | Language::Nim => true,
             _ => false,
         }
     }
@@ -104,28 +107,46 @@ impl StdFmt::Display for Language {
     }
 }
 
-
 impl Comment for Language {
     type Rep = &'static str;
 
     fn single(&self) -> Option<Vec<<Self as Comment>::Rep>> {
         match *self {
-            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Css |
-            Language::Java | Language::JavaScript | Language::Rust | Language::Go | Language::D => {
-                Some(vec!["//"])
-            }
+            Language::C
+            | Language::Cpp
+            | Language::Hpp
+            | Language::Header
+            | Language::Css
+            | Language::Java
+            | Language::JavaScript
+            | Language::Rust
+            | Language::Go
+            | Language::D => Some(vec!["//"]),
             Language::Php => Some(vec!["//", "#"]),
             Language::Xml | Language::Html => Some(vec!["<!--"]),
-            Language::Ruby | Language::Python | Language::Toml | Language::Perl |
-            Language::Assembly | Language::Shell | Language::Nim => Some(vec!["#"]),
+            Language::Ruby
+            | Language::Python
+            | Language::Toml
+            | Language::Perl
+            | Language::Assembly
+            | Language::Shell
+            | Language::Nim => Some(vec!["#"]),
         }
     }
 
     fn multi_start(&self) -> Option<<Self as Comment>::Rep> {
         match *self {
-            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Css |
-            Language::Java | Language::JavaScript | Language::Go | Language::Rust |
-            Language::Php | Language::D => Some("/*"),
+            Language::C
+            | Language::Cpp
+            | Language::Hpp
+            | Language::Header
+            | Language::Css
+            | Language::Java
+            | Language::JavaScript
+            | Language::Go
+            | Language::Rust
+            | Language::Php
+            | Language::D => Some("/*"),
             Language::Xml | Language::Html => Some("<!--"),
             Language::Ruby => Some("=begin"),
             Language::Python => Some("'''"),
@@ -136,9 +157,17 @@ impl Comment for Language {
 
     fn multi_end(&self) -> Option<<Self as Comment>::Rep> {
         match *self {
-            Language::C | Language::Cpp | Language::Hpp | Language::Header | Language::Css |
-            Language::Java | Language::Go | Language::JavaScript | Language::Rust |
-            Language::Php | Language::D => Some("*/"),
+            Language::C
+            | Language::Cpp
+            | Language::Hpp
+            | Language::Header
+            | Language::Css
+            | Language::Java
+            | Language::Go
+            | Language::JavaScript
+            | Language::Rust
+            | Language::Php
+            | Language::D => Some("*/"),
             Language::Xml | Language::Html => Some("-->"),
             Language::Ruby => Some("=end"),
             Language::Python => Some("'''"),

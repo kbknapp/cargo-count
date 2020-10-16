@@ -1,19 +1,23 @@
-
 use gitignore::File;
 
-use glob;use std::fs;
+use glob;
+use std::fs;
 use std::io::Result;
 use std::path::PathBuf;
 
-pub fn get_all_files(v: &mut Vec<PathBuf>,
-                     path: &PathBuf,
-                     exclude: &[PathBuf],
-                     follow_links: bool,
-                     gitignore: &Option<File>) {
-    debugln!("executing; get_all_files; path={:?}; exclude={:?}; all={:?}",
-             path,
-             exclude,
-             all);
+pub fn get_all_files(
+    v: &mut Vec<PathBuf>,
+    path: &PathBuf,
+    exclude: &[PathBuf],
+    follow_links: bool,
+    gitignore: &Option<File>,
+) {
+    debugln!(
+        "executing; get_all_files; path={:?}; exclude={:?}; all={:?}",
+        path,
+        exclude,
+        all
+    );
     if exclude.contains(path) {
         return;
     }
@@ -33,19 +37,22 @@ pub fn get_all_files(v: &mut Vec<PathBuf>,
             for entry in dir {
                 let entry = entry.unwrap();
                 let file_path = entry.path();
-                get_all_files(v,
-                              &file_path.to_path_buf(),
-                              exclude,
-                              follow_links,
-                              gitignore);
+                get_all_files(
+                    v,
+                    &file_path.to_path_buf(),
+                    exclude,
+                    follow_links,
+                    gitignore,
+                );
             }
         } else {
             debugln!("It's a file");
             v.push(path.clone());
         }
     } else {
-        for path_buf in glob::glob(path.to_str().unwrap_or(""))
-            .expect("failed to get files from glob") {
+        for path_buf in
+            glob::glob(path.to_str().unwrap_or("")).expect("failed to get files from glob")
+        {
             if let Ok(file_path) = path_buf {
                 if let Ok(result) = get_metadata(&file_path, follow_links) {
                     if result.is_dir() {
@@ -54,11 +61,13 @@ pub fn get_all_files(v: &mut Vec<PathBuf>,
                         for entry in dir {
                             let entry = entry.unwrap();
                             let file_path = entry.path();
-                            get_all_files(v,
-                                          &file_path.to_path_buf(),
-                                          exclude,
-                                          follow_links,
-                                          gitignore);
+                            get_all_files(
+                                v,
+                                &file_path.to_path_buf(),
+                                exclude,
+                                follow_links,
+                                gitignore,
+                            );
                         }
                     } else {
                         debugln!("It's a file");
