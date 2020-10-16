@@ -41,7 +41,7 @@ impl CliError {
 
 impl Display for CliError {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
-        write!(f, "{} {}", Format::Error("error:"), self.description())
+        write!(f, "{} {}", Format::Error("error:"), self.to_string())
     }
 }
 
@@ -55,7 +55,7 @@ impl Error for CliError {
         }
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         None
     }
 }
