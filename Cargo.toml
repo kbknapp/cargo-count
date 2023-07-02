@@ -17,7 +17,7 @@ name = "cargo-count"
 travis-ci = {repository = "kbknapp/cargo-count"}
 
 [dependencies]
-clap = "~2.11.2"
+clap = "~2"
 glob = "~0.2"
 tabwriter = "~0.1"
 regex = "~0.1"
